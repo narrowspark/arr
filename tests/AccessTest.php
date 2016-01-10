@@ -69,7 +69,7 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
 
-        $this->assertTrue($this->access->has(['desk' => ['price' => 100]], 'products'));
+        $this->assertTrue($this->access->has($array, 'products'));
         $this->assertTrue($this->access->has($array, 'products.desk'));
         $this->assertTrue($this->access->has($array, 'products.desk.price'));
         $this->assertFalse($this->access->has($array, 'products.foo'));

@@ -134,7 +134,7 @@ class Access
      */
     public function update(array $array, $key, callable $cb)
     {
-        $keys = $this->splitPath($key);
+        $keys    = $this->splitPath($key);
         $current =& $array;
 
         foreach ($keys as $key) {
@@ -183,5 +183,20 @@ class Access
 
             unset($array[array_shift($parts)]);
         }
+    }
+
+    /**
+     * Get all of the given array except for a specified array of items.
+     *
+     * @param array    $array
+     * @param string[] $keys
+     *
+     * @return array
+     */
+    public function except($array, $keys)
+    {
+        $this->forget($array, $keys);
+
+        return $array;
     }
 }

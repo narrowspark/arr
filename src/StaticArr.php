@@ -35,7 +35,7 @@ class StaticArr
     public static function __callStatic($name, $arguments)
     {
         if (!static::$methodArgs) {
-            $arrClass = new ReflectionClass('Narrowspark\Arr');
+            $arrClass = new ReflectionClass(Arr::class);
             $methods = $arrClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
             foreach ($methods as $method) {
@@ -49,16 +49,16 @@ class StaticArr
         }
 
         $numArgs = count($arguments);
-        $str = ($numArgs) ? $arguments[0] : '';
+        $str     = ($numArgs) ? $arguments[0] : '';
 
         if ($numArgs === static::$methodArgs[$name]) {
-            $args = array_slice($arguments, 1, -1);
+            $args     = array_slice($arguments, 1, -1);
             $encoding = $arguments[$numArgs - 1];
         } else {
-            $args = array_slice($arguments, 1);
+            $args     = array_slice($arguments, 1);
             $encoding = null;
         }
 
-        return call_user_func_array(array(new Arr(), $name), $args);
+        return call_user_func_array([new Arr(), $name], $args);
     }
 }
