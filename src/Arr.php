@@ -8,6 +8,7 @@ class Arr
         $access     = new Access();
         $enumerator = new Enumerator();
         $transform  = new Transform();
+        $traverse   = new Traverse();
 
         if (condition) {
             return call_user_func_array([$access, $name], $args);
