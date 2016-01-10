@@ -31,12 +31,12 @@
     },
     "autoload": {
         "psr-4": {
-            "arrspace\\"        : "src/"
+            "Narrowspark\\Arr\\"          : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "arrspace\\Tests\\" : "tests/"
+            "Narrowspark\\Arr\\Tests\\"   : "tests/"
         }
     },
     "extra": {
