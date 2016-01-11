@@ -53,6 +53,28 @@ class Transform
     }
 
     /**
+     * Collapse an array of arrays into a single array.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public function collapse(array $array)
+    {
+        $results = [];
+
+        foreach ($array as $values) {
+            if (!is_array($values)) {
+                continue;
+            }
+
+            $results = array_merge($results, $values);
+        }
+
+        return $results;
+    }
+
+    /**
      * Divide an array into two arrays. One with keys and the other with values.
      *
      * @param array $array

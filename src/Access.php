@@ -22,6 +22,8 @@ class Access
      */
     public function set(array &$array, $key, $value)
     {
+        var_dump($array);
+
         if ($key === null) {
             return $array = $value;
         }
@@ -98,6 +100,24 @@ class Access
         $this->set($array, $key, $target);
 
         return $array;
+    }
+
+    /**
+     * Get a value from the array, and remove it.
+     *
+     * @param array       $array
+     * @param string      $key
+     * @param string|null $default
+     *
+     * @return mixed
+     */
+    public function pull(array &$array, $key, $default = null)
+    {
+        $value = $this->get($array, $key, $default);
+
+        $this->forget($array, $key);
+
+        return $value;
     }
 
     /**

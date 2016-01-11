@@ -19,7 +19,7 @@ class Enumerator
      *
      * @return mixed
      */
-    public function first($array, callable $callback, $default = null)
+    public function first(array $array, callable $callback, $default = null)
     {
         foreach ($array as $key => $value) {
             if (call_user_func($callback, $key, $value)) {
@@ -39,13 +39,13 @@ class Enumerator
      *
      * @return mixed
      */
-    public function last($array, callable $callback, $default = null)
+    public function last(array $array, callable $callback, $default = null)
     {
         return $this->first(array_reverse($array), $callback, $default);
     }
 
     /**
-     * Get a random element from the array supplied
+     * Get a random element from the array supplied.
      *
      * @param array $array the source array
      *
@@ -53,11 +53,13 @@ class Enumerator
      */
     public static function random(array $array)
     {
-        // Get random index
-        $index = rand(0, count($array) - 1);
+        if (!count($array)) {
+            return;
+        }
 
-        // Return element
-        return $this->value($array[$index]);
+        $keys = array_rand($array, 1);
+
+        return $this->value($array[$keys]);
     }
 
     /**
@@ -68,27 +70,29 @@ class Enumerator
      *
      * @return string[]
      */
-    public function only($array, $keys)
+    public function only(array $array, $keys)
     {
         return array_intersect_key($array, array_flip((array) $keys));
     }
 
     /**
-     * Get a value from the array, and remove it.
+     * Split an array in the given amount of pieces.
      *
-     * @param array       $array
-     * @param string      $key
-     * @param string|null $default
+     * @param array $array
+     * @param int   $numberOfPieces
+     * @param bool  $preserveKeys
      *
-     * @return mixed
+     * @return array
      */
-    public function pull(array &$array, $key, $default = null)
+    public function split(array $array, $numberOfPieces = 2, $preserveKeys = false)
     {
-        $value = $this->get($array, $key, $default);
+        if (count($array) === 0) {
+            return [];
+        }
 
-        $this->forget($array, $key);
+        $splitSize = ceil(count($array) / $numberOfPieces);
 
-        return $value;
+        return array_chunk($array, $splitSize, $preserveKeys);
     }
 
     /**
@@ -141,6 +145,26 @@ class Enumerator
         }
 
         return $filtered;
+    }
+
+    /**
+     * Push an item onto the beginning of an array.
+     *
+     * @param array $array
+     * @param mixed $value
+     * @param mixed $key
+     *
+     * @return array
+     */
+    public function prepend(array $array, $value, $key = null)
+    {
+        if (is_null($key)) {
+            array_unshift($array, $value);
+        } else {
+            $array = [$key => $value] + $array;
+        }
+
+        return $array;
     }
 
     /**
@@ -198,48 +222,6 @@ class Enumerator
     }
 
     /**
-     * Push an item onto the beginning of an array.
-     *
-     * @param array $array
-     * @param mixed $value
-     * @param mixed $key
-     *
-     * @return array
-     */
-    public function prepend(array $array, $value, $key = null)
-    {
-        if (is_null($key)) {
-            array_unshift($array, $value);
-        } else {
-            $array = [$key => $value] + $array;
-        }
-
-        return $array;
-    }
-
-    /**
-     * Collapse an array of arrays into a single array.
-     *
-     * @param array $array
-     *
-     * @return array
-     */
-    public function collapse(array $array)
-    {
-        $results = [];
-
-        foreach ($array as $values) {
-            if (!is_array($values)) {
-                continue;
-            }
-
-            $results = array_merge($results, $values);
-        }
-
-        return $results;
-    }
-
-    /**
      * Replace a given pattern with each value in the array in sequentially.
      *
      * @param string $pattern
@@ -270,69 +252,12 @@ class Enumerator
     }
 
     /**
-     * Index the array by array of keys.
-     *
-     * @param array     $data
-     * @param array     $keys
-     * @param bool|true $unique
-     *
-     * @return array
-     */
-    public function getIndexedByKeys(array $data, array $keys, $unique = true)
-    {
-        $result = [];
-
-        foreach ($data as $value) {
-            $this->indexByKeys($result, $value, $keys, $unique);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Converts array of arrays to one-dimensional array, where key is $keyName and value is $valueName.
-     *
-     * @param array        $array
-     * @param string       $keyName
-     * @param string|array $valueName
-     *
-     * @return array
-     */
-    public function getIndexedValues(array $array, $keyName, $valueName)
-    {
-        array_flip($this->pluck($array, $keyName, $valueName));
-    }
-
-    /**
-     * @param array     $result
-     * @param array     $toSave
-     * @param array     $keys
-     * @param bool|true $unique
-     */
-    protected function indexByKeys(array &$result, array $toSave, array $keys, $unique = true)
-    {
-        foreach ($keys as $key) {
-            if (!isset($result[$toSave[$key]])) {
-                $result[$toSave[$key]] = [];
-            }
-
-            $result = &$result[$toSave[$key]];
-        }
-
-        if ($unique) {
-            $result = $toSave;
-        } else {
-            $result[] = $toSave;
-        }
-    }
-
-    /**
      * Explode the "value" and "key" arguments passed to "pluck".
      *
      * @param string      $value
      * @param string|null $key
      *
-     * @return array
+     * @return array[]
      */
     protected function explodePluckParameters($value, $key)
     {
