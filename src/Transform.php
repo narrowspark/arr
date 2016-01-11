@@ -32,7 +32,7 @@ class Transform
      *
      * @param array    $array
      * @param callable $cb        Function to combine values.
-     * @param boolean  $overwrite Should duplicate keys be overwritten?
+     * @param bool     $overwrite Should duplicate keys be overwritten?
      *
      * @return array Indexed values.
      */
@@ -72,6 +72,7 @@ class Transform
      *                            ['currentIndex' => 'newIndex'].
      * @param boole $keepUnmapped Whether or not to keep keys that are not
      *                            remapped.
+     *
      * @return array
      */
     public function reindex(array $array, array $map, $keepUnmapped = true)
