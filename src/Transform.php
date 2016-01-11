@@ -65,15 +65,14 @@ class Transform
     }
 
     /**
-     *  Reindexes a list of values.
+     * Reindexes a list of values.
      *
-     *  @param array $array
-     *  @param array $map          An map of correspondances of the form
-     *                             ['currentIndex' => 'newIndex'].
-     *  @param boole $keepUnmapped Whether or not to keep keys that are not
-     *                             remapped.
-     *
-     *  @return array
+     * @param array $array
+     * @param array $map          An map of correspondances of the form
+     *                            ['currentIndex' => 'newIndex'].
+     * @param boole $keepUnmapped Whether or not to keep keys that are not
+     *                            remapped.
+     * @return array
      */
     public function reindex(array $array, array $map, $keepUnmapped = true)
     {

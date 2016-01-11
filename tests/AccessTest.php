@@ -12,7 +12,8 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $this->access = new Access();
     }
 
-    public function testUpdate() {
+    public function testUpdate()
+    {
         $data = [
             'a' => 1,
             'b' => [
@@ -33,7 +34,7 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $increment = function($value) {
+        $increment = function ($value) {
             return $value + 1;
         };
 
@@ -44,11 +45,20 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testAdd()
+    /**
+     * @dataProvider resetProvider
+     */
+    public function testReset($expected, $array, $deep)
     {
-        $array = $this->access->add(['name' => 'Desk'], 'price', 100);
+        $this->assertEquals($expected, $this->access->reset($array, $deep), $deep);
+    }
 
-        $this->assertEquals(['name' => 'Desk', 'price' => 100], $array);
+    /**
+     * @dataProvider array_add_provider
+     */
+    public function testAdd($expected, $array, $key, $value)
+    {
+        $this->assertEquals($expected, $this->access->add($array, $key, $value));
     }
 
     public function testGet()
@@ -125,5 +135,36 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $array = ['products' => ['desk' => ['price' => 50], null => 'something']];
         $this->access->forget($array, ['products.amount.all', 'products.desk.price']);
         $this->assertEquals(['products' => ['desk' => [], null => 'something']], $array);
+    }
+
+    public function resetProvider()
+    {
+        return [
+            [
+                [0 => 'foo', 'baz' => 'bar', 1 => 'bar'],
+                [10 => 'foo', 'baz' => 'bar', '199' => 'bar'],
+                false
+            ],
+            [
+                [0 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', 1 => 'bar'],
+                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
+                false,
+            ],
+            [
+                [0 => [0 => 'foo', 'baz' => 'bar', 1 => 'bar'], 'baz' => 'bar', 1 => 'bar'],
+                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
+                true,
+            ],
+        ];
+    }
+
+    public function addProvider()
+    {
+        return [
+            [['list' => [1, 2, 3]], ['list' => [1, 2]], 'list', 3],
+            // [['value' => [1, 2]], ['value' => 1], 'value', 2,],
+            // [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => 1]], 'nested.value', 2,],
+            // [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => [1]]], 'nested.value', 2,],
+        ];
     }
 }

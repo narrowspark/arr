@@ -47,24 +47,6 @@ class Access
     }
 
     /**
-     * Add an element to an array if it doesn't exist.
-     *
-     * @param array  $array
-     * @param string $key
-     * @param string $value
-     *
-     * @return array
-     */
-    public function add(array $array, $key, $value)
-    {
-        if (!isset($array[$key])) {
-            $array[$key] = $value;
-        }
-
-        return $array;
-    }
-
-    /**
      * Get an item from an array using "dot" notation.
      *
      * @param array           $array
@@ -90,6 +72,30 @@ class Access
 
             $array = $array[$segment];
         }
+
+        return $array;
+    }
+
+    /**
+     * Add an element to the array at a specific location
+     * using the "dot" notation.
+     *
+     * @param array $array
+     * @param $key
+     * @param $value
+     *
+     * @return array
+     */
+    public function add(array &$array, $key, $value)
+    {
+        $target = $this->get($array, $key, []);
+
+        if (!is_array($target)) {
+            $target = [$target];
+        }
+
+        $target[] = $value;
+        $this->set($array, $key, $target);
 
         return $array;
     }
@@ -186,6 +192,34 @@ class Access
     }
 
     /**
+     * Reset all numerical indexes of an array (start from zero).
+     * Non-numerical indexes will stay untouched. Returns a new array.
+     *
+     * @param array      $array
+     * @param bool|false $deep
+     *
+     * @return array
+     */
+    public function reset(array $array, $deep = false)
+    {
+        $target = [];
+
+        foreach ($array as $key => $value) {
+            if ($deep && is_array($value)) {
+                $value = $this->reset($value);
+            }
+
+            if (is_numeric($key)) {
+                $target[] = $value;
+            } else {
+                $target[$key] = $value;
+            }
+        }
+
+        return $target;
+    }
+
+    /**
      * Get all of the given array except for a specified array of items.
      *
      * @param array    $array
@@ -193,7 +227,7 @@ class Access
      *
      * @return array
      */
-    public function except($array, $keys)
+    public function except(array $array, $keys)
     {
         $this->forget($array, $keys);
 
