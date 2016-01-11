@@ -9,16 +9,16 @@ use RuntimeException;
 class Arr
 {
     /**
-     * A mapping of method names to the numbers of arguments it accepts. Each
-     * should be two more than the equivalent method.
-     *
-     * @var string[]
-     */
+      * A mapping of method names to the numbers of arguments it accepts. Each
+      * should be two more than the equivalent method.
+      *
+      * @var string[]
+      */
      protected $classes = [
         Access::class,
         Enumerator::class,
         Transform::class,
-        Traverse::class
+        Traverse::class,
     ];
 
     protected $methodArgs = null;
