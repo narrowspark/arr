@@ -3,12 +3,10 @@ namespace Narrowspark\Arr;
 
 class Traverse
 {
-
-
     /**
      * Applies the callback to the elements of the given arrays
      *
-     * @param array $array
+     * @param array    $array
      * @param callable $callback
      *
      * @return $array
