@@ -134,21 +134,21 @@ class Access
      *
      * @param array        $array
      * @param array|string $key
-     * @param callable     $cb Callback to update the value.
+     * @param callable     $cb    Callback to update the value.
      *
      * @return mixed Updated data.
      */
     public function update(array $array, $key, callable $cb)
     {
         $keys    = $this->splitPath($key);
-        $current =& $array;
+        $current = & $array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current =& $current[$key];
+            $current = & $current[$key];
         }
 
         $current = call_user_func($cb, $current);

@@ -28,9 +28,9 @@ class StaticArr
      * @param string  $name
      * @param mixed[] $arguments
      *
-     * @return Arr
-     *
      * @throws \BadMethodCallException
+     *
+     * @return Arr
      */
     public static function __callStatic($name, $arguments)
     {

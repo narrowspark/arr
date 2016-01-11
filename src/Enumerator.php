@@ -45,13 +45,13 @@ class Enumerator
     }
 
     /**
-    * Get a random element from the array supplied
-    *
-    * @param array $array the source array
-    *
-    * @return mixed
-    */
-    public static function random(Array $array)
+     * Get a random element from the array supplied
+     *
+     * @param array $array the source array
+     *
+     * @return mixed
+     */
+    public static function random(array $array)
     {
         // Get random index
         $index = rand(0, count($array) - 1);
