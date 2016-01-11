@@ -51,7 +51,7 @@ class Enumerator
      *
      * @return mixed
      */
-    public static function random(array $array)
+    public function random(array $array)
     {
         if (!count($array)) {
             return;

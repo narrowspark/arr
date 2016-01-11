@@ -20,15 +20,14 @@ class Access
      *
      * @return array
      */
-    public function set(array &$array, $key, $value)
+    public function set(array $array, $key, $value)
     {
-        var_dump($array);
-
         if ($key === null) {
-            return $array = $value;
+            return $current = $value;
         }
 
-        $keys = $this->splitPath($key);
+        $keys    = $this->splitPath($key);
+        $current =& $array;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -36,14 +35,14 @@ class Access
             // If the key doesn't exist at this depth, we will just create an empty array
             // to hold the next value, allowing us to create the arrays to hold final
             // values at the correct depth. Then we'll keep digging into the array.
-            if (!isset($array[$key]) || !is_array($array[$key])) {
-                $array[$key] = [];
+            if (!isset($current[$key]) || !is_array($current[$key])) {
+                $current[$key] = [];
             }
 
-            $array = &$array[$key];
+            $current =& $current[$key];
         }
 
-        $array[array_shift($keys)] = $value;
+        $current[array_shift($keys)] = $value;
 
         return $array;
     }
@@ -88,7 +87,7 @@ class Access
      *
      * @return array
      */
-    public function add(array &$array, $key, $value)
+    public function add(array $array, $key, $value)
     {
         $target = $this->get($array, $key, []);
 
@@ -100,24 +99,6 @@ class Access
         $this->set($array, $key, $target);
 
         return $array;
-    }
-
-    /**
-     * Get a value from the array, and remove it.
-     *
-     * @param array       $array
-     * @param string      $key
-     * @param string|null $default
-     *
-     * @return mixed
-     */
-    public function pull(array &$array, $key, $default = null)
-    {
-        $value = $this->get($array, $key, $default);
-
-        $this->forget($array, $key);
-
-        return $value;
     }
 
     /**
@@ -154,21 +135,21 @@ class Access
      *
      * @param array        $array
      * @param array|string $key
-     * @param callable     $cb    Callback to update the value.
+     * @param callable     $cb Callback to update the value.
      *
      * @return mixed Updated data.
      */
     public function update(array $array, $key, callable $cb)
     {
         $keys    = $this->splitPath($key);
-        $current = & $array;
+        $current =& $array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current = & $current[$key];
+            $current =& $current[$key];
         }
 
         $current = call_user_func($cb, $current);
@@ -182,9 +163,9 @@ class Access
      * @param array        $array
      * @param array|string $keys
      */
-    public function forget(array &$array, $keys)
+    public function forget(array $array, $keys)
     {
-        $original = &$array;
+        $original =& $array;
         $keys     = (array) $keys;
 
         if (count($keys) === 0) {
@@ -195,13 +176,13 @@ class Access
             $parts = $this->splitPath($key);
 
             // clean up before each pass
-            $array = &$original;
+            $array =& $original;
 
             while (count($parts) > 1) {
                 $part = array_shift($parts);
 
                 if (isset($array[$part]) && is_array($array[$part])) {
-                    $array = &$array[$part];
+                    $array =& $array[$part];
                 } else {
                     continue 2;
                 }

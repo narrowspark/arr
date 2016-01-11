@@ -44,20 +44,20 @@ class Arr
             throw new BadMethodCallException(sprintf('%s is not a valid method.', $name));
         }
 
-        if (count($args) !== $this->methodArgs[$name]) {
-            throw new RuntimeException(
-                sprintf(
-                    '%s counted arguments dont match needed arguments %s for function %s.',
-                    count($args),
-                    count($this->methodArgs[$name]),
-                    $name
-                )
-            );
-        }
+        // if (count($args) < 2) {
+        //     throw new RuntimeException(
+        //         sprintf(
+        //             '%s counted arguments dont match needed arguments %s for function %s.',
+        //             count($args),
+        //             yy
+        //             $name
+        //         )
+        //     );
+        // }
 
         foreach ($this->classes as $class) {
             if (method_exists($class, $name)) {
-                $this->getFunction(new $class(), $name, $args);
+                return call_user_func_array([new $class(), $name], $args);
             }
         }
     }
@@ -79,29 +79,6 @@ class Arr
                     $this->methodArgs[$method->name] = $params;
                 }
             }
-        }
-    }
-
-    /**
-     * Get function from the correct object.
-     *
-     * @param object $instance
-     * @param string $method
-     * @param array  $args
-     *
-     * @return mixed
-     */
-    protected function getFunction($instance, $method, $args)
-    {
-        switch (count($args)) {
-            case 2:
-                return $instance->$method($args[0], $args[1]);
-
-            case 3:
-                return $instance->$method($args[0], $args[1], $args[2]);
-
-            case 4:
-                return $instance->$method($args[0], $args[1], $args[2], $args[3]);
         }
     }
 }

@@ -90,11 +90,11 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     public function testSet()
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->set($array, 'products.desk.price', 200);
+        $array = $this->access->set($array, 'products.desk.price', 200);
         $this->assertEquals(['products' => ['desk' => ['price' => 200]]], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->set($array, null, $array);
+        $array = $this->access->set($array, null, $array);
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
     }
 
