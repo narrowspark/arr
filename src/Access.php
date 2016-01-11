@@ -27,7 +27,7 @@ class Access
         }
 
         $keys    = $this->splitPath($key);
-        $current =& $array;
+        $current = & $array;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -39,7 +39,7 @@ class Access
                 $current[$key] = [];
             }
 
-            $current =& $current[$key];
+            $current = & $current[$key];
         }
 
         $current[array_shift($keys)] = $value;
@@ -135,21 +135,21 @@ class Access
      *
      * @param array        $array
      * @param array|string $key
-     * @param callable     $cb Callback to update the value.
+     * @param callable     $cb    Callback to update the value.
      *
      * @return mixed Updated data.
      */
     public function update(array $array, $key, callable $cb)
     {
         $keys    = $this->splitPath($key);
-        $current =& $array;
+        $current = & $array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current =& $current[$key];
+            $current = & $current[$key];
         }
 
         $current = call_user_func($cb, $current);
@@ -165,7 +165,7 @@ class Access
      */
     public function forget(array $array, $keys)
     {
-        $original =& $array;
+        $original = & $array;
         $keys     = (array) $keys;
 
         if (count($keys) === 0) {
@@ -176,13 +176,13 @@ class Access
             $parts = $this->splitPath($key);
 
             // clean up before each pass
-            $array =& $original;
+            $array = & $original;
 
             while (count($parts) > 1) {
                 $part = array_shift($parts);
 
                 if (isset($array[$part]) && is_array($array[$part])) {
-                    $array =& $array[$part];
+                    $array = & $array[$part];
                 } else {
                     continue 2;
                 }
