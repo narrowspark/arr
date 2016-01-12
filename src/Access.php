@@ -24,7 +24,7 @@ class Access
             return $array = $value;
         }
 
-        $keys    = $this->splitPath($key);
+        $keys    = explode('.', $key);
         $current = &$array;
 
         while (count($keys) > 1) {
