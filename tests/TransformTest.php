@@ -304,4 +304,22 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             [[[1, 4, 7], [2, 5, 8]], [1, 2], [4, 5, 6], [7, 8, 9]],
         ];
     }
+
+    public function testPop()
+    {
+        $this->assertEquals(
+            'banana',
+            $this->transform->pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'orange')
+        );
+
+        $this->assertEquals(
+            null,
+            $this->transform->pop(['orange' => 'banana'], 'orange')
+        );
+
+        $this->assertEquals(
+            null,
+            $this->transform->pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'dont')
+        );
+    }
 }

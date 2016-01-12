@@ -34,6 +34,33 @@ class Transform
     }
 
     /**
+     * Pop value from sub array.
+     *
+     * @param array  $array
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public static function pop(array $array, $key)
+    {
+        $keys = explode('.', $key);
+
+        foreach ($keys as $key) {
+            if (!isset($array[$key])) {
+                return null;
+            }
+
+            $array = $array[$key];
+        }
+
+        if (!is_array($array)) {
+            return null;
+        }
+
+        return array_pop($array);
+    }
+
+    /**
      * Swap two elements between positions.
      *
      * @param array  $array array to swap
