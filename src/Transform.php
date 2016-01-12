@@ -1,9 +1,9 @@
 <?php
 namespace Narrowspark\Arr;
 
+use Closure;
 use Narrowspark\Arr\Traits\SplitPathTrait;
 use Narrowspark\Arr\Traits\ValueTrait;
-use Closure;
 
 class Transform
 {
@@ -186,6 +186,7 @@ class Transform
      *
      * @param array $elements
      * @param array $ignore
+     *
      * @return array
      */
     public function without(array $array, array $ignore)
