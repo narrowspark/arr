@@ -2,12 +2,10 @@
 namespace Narrowspark\Arr;
 
 use ArrayAccess;
-use Narrowspark\Arr\Traits\SplitPathTrait;
 use Narrowspark\Arr\Traits\ValueTrait;
 
 class Enumerator
 {
-    use SplitPathTrait;
     use ValueTrait;
 
     /**
@@ -182,7 +180,7 @@ class Enumerator
             return $target;
         }
 
-        $key = is_array($key) ? $key : $this->splitPath($key);
+        $key = is_array($key) ? $key : explode('.', $key);
 
         while (($segment = array_shift($key)) !== null) {
             if ($segment === '*') {
@@ -261,9 +259,9 @@ class Enumerator
      */
     protected function explodePluckParameters($value, $key)
     {
-        $value = is_array($value) ? $value : $this->splitPath($key);
+        $value = is_array($value) ? $value : explode('.', $key);
 
-        $key = is_null($key) || is_array($key) ? $key : $this->splitPath($key);
+        $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
 
         return [$value, $key];
     }

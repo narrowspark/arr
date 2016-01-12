@@ -1,12 +1,10 @@
 <?php
 namespace Narrowspark\Arr;
 
-use Narrowspark\Arr\Traits\SplitPathTrait;
 use Narrowspark\Arr\Traits\ValueTrait;
 
 class Access
 {
-    use SplitPathTrait;
     use ValueTrait;
 
     /**
@@ -27,7 +25,7 @@ class Access
         }
 
         $keys    = $this->splitPath($key);
-        $current = & $array;
+        $current = &$array;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -39,7 +37,7 @@ class Access
                 $current[$key] = [];
             }
 
-            $current = & $current[$key];
+            $current = &$current[$key];
         }
 
         $current[array_shift($keys)] = $value;
@@ -66,7 +64,7 @@ class Access
             return $array[$key];
         }
 
-        foreach ($this->splitPath($key) as $segment) {
+        foreach (explode('.', $key) as $segment) {
             if (!array_key_exists($segment, $array)) {
                 return $this->value($default);
             }
@@ -119,8 +117,8 @@ class Access
             return true;
         }
 
-        foreach ($this->splitPath($key) as $segment) {
-            if (!array_key_exists($segment, $array)) {
+        foreach (explode('.', $key) as $segment) {
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
                 return false;
             }
 
@@ -141,15 +139,15 @@ class Access
      */
     public function update(array $array, $key, callable $cb)
     {
-        $keys    = $this->splitPath($key);
-        $current = & $array;
+        $keys    = explode('.', $key);
+        $current = &$array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current = & $current[$key];
+            $current = &$current[$key];
         }
 
         $current = call_user_func($cb, $current);
@@ -173,7 +171,7 @@ class Access
         }
 
         foreach ($keys as $key) {
-            $parts = $this->splitPath($key);
+            $parts = explode('.', $key);
             // clean up before each pass
             $arr = &$original;
 

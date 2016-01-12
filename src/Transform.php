@@ -138,6 +138,30 @@ class Transform
     }
 
     /**
+     * Extend one array with another.
+     *
+     * @param array $arrays
+     *
+     * @return array
+     */
+    public function extend(/*args...*/)
+    {
+        $merged = [];
+
+        foreach (func_get_args() as $array) {
+            foreach ($array as $key => $value) {
+                if (is_array($value) && (new Access())->has($merged, $key) && is_array($merged[$key])) {
+                    $merged[$key] = $this->extend($merged[$key], $value);
+                } else {
+                    $merged[$key] = $value;
+                }
+            }
+        }
+
+        return $merged;
+    }
+
+    /**
      * Flatten a multi-dimensional associative array with dots.
      *
      * @param array  $array
