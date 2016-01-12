@@ -245,8 +245,8 @@ class Transform
      * The function maps an element to the key that will be used for grouping.
      * If no function is passed, the element itself will be used as key.
      *
-     * @param  array         $array
-     * @param  callable|null $callback
+     * @param array         $array
+     * @param callable|null $callback
      *
      * @return array
      */
@@ -446,13 +446,13 @@ class Transform
         array_shift($args);
 
         foreach ($array as $key => $value) {
-            $array[$key] = array($value);
+            $array[$key] = [$value];
 
             foreach ($args as $k => $v) {
                 $array[$key][] = current($args[$k]);
 
-                if (next($args[$k]) === false && $args[$k] !== array(null)) {
-                    $args[$k] = array(null);
+                if (next($args[$k]) === false && $args[$k] !== [null]) {
+                    $args[$k] = [null];
                 }
             }
         }
