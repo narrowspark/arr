@@ -3,6 +3,7 @@ namespace Narrowspark\Arr;
 
 use Narrowspark\Arr\Traits\SplitPathTrait;
 use Narrowspark\Arr\Traits\ValueTrait;
+use Closure;
 
 class Transform
 {
@@ -159,6 +160,43 @@ class Transform
     public function divide($array)
     {
         return [array_keys($array), array_values($array)];
+    }
+
+    /**
+     * Remove duplicated values.
+     *
+     * @param array        $elements
+     * @param Closure|null $iterator
+     *
+     * @return array
+     */
+    public function unique(array $elements, Closure $iterator = null)
+    {
+        if ($iterator !== null) {
+            $elements = array_filter($elements, $iterator);
+        } else {
+            $elements = array_unique($elements);
+        }
+
+        return array_values($elements);
+    }
+
+    /**
+     * Remove all instances of $ignore found in $elements (=== is used).
+     *
+     * @param array $elements
+     * @param array $ignore
+     * @return array
+     */
+    public function without(array $array, array $ignore)
+    {
+        foreach ($array as $key => $node) {
+            if (in_array($node, $ignore, true)) {
+                unset($array[$key]);
+            }
+        }
+
+        return array_values($array);
     }
 
     /**
