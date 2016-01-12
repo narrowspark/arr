@@ -8,13 +8,11 @@
 ## Master
 
 [![Build Status](https://img.shields.io/travis/narrowspark/arr/master.svg?style=flat-square)](https://travis-ci.org/narrowspark/arr)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/narrowspark/arr.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/narrowspark/arr.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr)
 
 ## Develop
 
 [![Build Status](https://img.shields.io/travis/narrowspark/arr/master.svg?style=flat-square)](https://travis-ci.org/narrowspark/arr)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/narrowspark/arr.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/narrowspark/arr.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr)
 
 ## Install

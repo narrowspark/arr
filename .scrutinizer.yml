@@ -97,8 +97,3 @@ build:
     dependencies:
         override:
             - 'composer install'
-
-tools:
-    external_code_coverage:
-        timeout: 600
-        runs: 3
