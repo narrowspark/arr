@@ -27,7 +27,7 @@ class Access
         }
 
         $keys    = $this->splitPath($key);
-        $current =& $array;
+        $current = & $array;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -39,7 +39,7 @@ class Access
                 $current[$key] = [];
             }
 
-            $current =& $current[$key];
+            $current = & $current[$key];
         }
 
         $current[array_shift($keys)] = $value;
@@ -142,14 +142,14 @@ class Access
     public function update(array $array, $key, callable $cb)
     {
         $keys    = $this->splitPath($key);
-        $current =& $array;
+        $current = & $array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current =& $current[$key];
+            $current = & $current[$key];
         }
 
         $current = call_user_func($cb, $current);
