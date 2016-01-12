@@ -170,7 +170,7 @@ class Enumerator
      *
      * @param mixed        $target
      * @param string|array $key
-     * @param string       $default
+     * @param string|null  $default
      *
      * @return mixed
      */
@@ -190,7 +190,7 @@ class Enumerator
 
                 $result = $this->pluck($target, $key);
 
-                return in_array('*', $key, true) ? $this->collapse($result) : $result;
+                return in_array('*', $key, true) ? (new Transform())->collapse($result) : $result;
             }
 
             if (is_array($target)) {

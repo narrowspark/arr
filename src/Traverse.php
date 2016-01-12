@@ -9,7 +9,7 @@ class Traverse
      * @param array    $array
      * @param callable $callback
      *
-     * @return $array
+     * @return array
      */
     public function map(array $array, callable $callback)
     {
@@ -55,7 +55,7 @@ class Traverse
      *
      *  @return array filtered array.
      */
-    public static function reject(array $array, callable $cb)
+    public function reject(array $array, callable $cb)
     {
         return $this->filter($array, function ($value, $key) use ($cb) {
             return !call_user_func($cb, $value, $key);

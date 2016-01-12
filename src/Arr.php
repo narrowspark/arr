@@ -38,7 +38,7 @@ class Arr
      */
     public function __call($name, $args)
     {
-        $this->getMethodArgs($name);
+        $this->getMethodArgs();
 
         if (!isset($this->methodArgs[$name])) {
             throw new BadMethodCallException(sprintf('%s is not a valid method.', $name));
@@ -64,10 +64,8 @@ class Arr
 
     /**
      * Get all methods arguments.
-     *
-     * @param string $name
      */
-    protected function getMethodArgs($name)
+    protected function getMethodArgs()
     {
         if (!$this->methodArgs) {
             foreach ($this->classes as $classInterface) {

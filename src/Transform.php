@@ -31,17 +31,17 @@ class Transform
      * Indexes an array depending on the values it contains.
      *
      * @param array    $array
-     * @param callable $cb        Function to combine values.
+     * @param callable $callback  Function to combine values.
      * @param bool     $overwrite Should duplicate keys be overwritten?
      *
      * @return array Indexed values.
      */
-    public function combine(array $array, callable $cb, $overwrite = true)
+    public function combine(array $array, callable $callback, $overwrite = true)
     {
         $combined = [];
 
         foreach ($array as $key => $value) {
-            $combinator = call_user_func($cb, $value, $key);
+            $combinator = call_user_func($callback, $value, $key);
             $index      = $combinator->key();
 
             if ($overwrite || !isset($combined[$index])) {
@@ -79,7 +79,7 @@ class Transform
      *
      * @param array $array
      *
-     * @return array
+     * @return array[]
      */
     public function divide($array)
     {
@@ -92,7 +92,7 @@ class Transform
      * @param array $array
      * @param array $map          An map of correspondances of the form
      *                            ['currentIndex' => 'newIndex'].
-     * @param boole $keepUnmapped Whether or not to keep keys that are not
+     * @param bool  $keepUnmapped Whether or not to keep keys that are not
      *                            remapped.
      *
      * @return array
@@ -144,7 +144,7 @@ class Transform
      *
      * @return array
      */
-    public function extend(/*args...*/)
+    public function extend(array $arrays)
     {
         $merged = [];
 

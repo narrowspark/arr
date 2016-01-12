@@ -21,7 +21,7 @@ class Access
     public function set(array $array, $key, $value)
     {
         if ($key === null) {
-            return $array = $value;
+            return $value;
         }
 
         $keys    = explode('.', $key);
@@ -48,9 +48,9 @@ class Access
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param array           $array
-     * @param string|callable $key
-     * @param mixed           $default
+     * @param array                  $array
+     * @param string[]|callable|null $key
+     * @param mixed                  $default
      *
      * @return mixed
      */
@@ -61,7 +61,7 @@ class Access
         }
 
         if (isset($array[$key])) {
-            return $array[$key];
+            return $this->value($array[$key]);
         }
 
         foreach (explode('.', $key) as $segment) {
@@ -131,13 +131,13 @@ class Access
     /**
      * Updates data at the given path.
      *
-     * @param array        $array
-     * @param array|string $key
-     * @param callable     $cb    Callback to update the value.
+     * @param array          $array
+     * @param array|string[] $key
+     * @param callable       $callback Callback to update the value.
      *
      * @return mixed Updated data.
      */
-    public function update(array $array, $key, callable $cb)
+    public function update(array $array, $key, callable $callback)
     {
         $keys    = explode('.', $key);
         $current = &$array;
@@ -150,7 +150,7 @@ class Access
             $current = &$current[$key];
         }
 
-        $current = call_user_func($cb, $current);
+        $current = call_user_func($callback, $current);
 
         return $array;
     }
