@@ -14,6 +14,26 @@ class Transform
     protected $dotted = [];
 
     /**
+     * A instance of Access
+     *
+     * @var \Narrowspark\Arr\Access
+     */
+    protected $access;
+
+    /**
+     * A instance of Access
+     *
+     * @var \Narrowspark\Arr\Enumerator
+     */
+    protected $enumerator;
+
+    public function __construct()
+    {
+        $this->access     = new Access();
+        $this->enumerator = new Enumerator();
+    }
+
+    /**
      * Swap two elements between positions.
      *
      * @param array  $array array to swap
@@ -25,6 +45,34 @@ class Transform
     public function swap(array $array, $swapA, $swapB)
     {
         list($array[$swapA], $array[$swapB]) = [$array[$swapB], $array[$swapA]];
+
+        return $array;
+    }
+
+    /**
+     * Create a new array consisting of every n-th element.
+     *
+     * @param array $array
+     * @param int   $step
+     * @param int   $offset
+     *
+     * @return array
+     */
+    public static function every($array, $step, $offset = 0)
+    {
+        $new = [];
+
+        $position = 0;
+
+        foreach ($array as $key => $item) {
+            if ($position % $step === $offset) {
+                $new[] = $item;
+            }
+
+            $position++;
+        }
+
+        return $new;
     }
 
     /**
@@ -150,7 +198,7 @@ class Transform
 
         foreach (func_get_args() as $array) {
             foreach ($array as $key => $value) {
-                if (is_array($value) && (new Access())->has($merged, $key) && is_array($merged[$key])) {
+                if (is_array($value) && $this->access->has($merged, $key) && is_array($merged[$key])) {
                     $merged[$key] = $this->extend($merged[$key], $value);
                 } else {
                     $merged[$key] = $value;
@@ -159,6 +207,70 @@ class Transform
         }
 
         return $merged;
+    }
+
+    /**
+     * Transforms a 1-dimensional array into a multi-dimensional one,
+     * exploding keys according to a separator.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public function asHierarchy(array $array)
+    {
+        $hierarchy = [];
+
+        foreach ($array as $key => $value) {
+            $segments     = explode('.', $key);
+            $valueSegment = array_pop($segments);
+            $branch       = &$hierarchy;
+
+            foreach ($segments as $segment) {
+                if (!isset($branch[$segment])) {
+                    $branch[$segment] = [];
+                }
+
+                $branch = &$branch[$segment];
+            }
+
+            $branch[$valueSegment] = $value;
+        }
+
+        return $hierarchy;
+    }
+
+    /**
+     * Separates elements from an array into groups.
+     * The function maps an element to the key that will be used for grouping.
+     * If no function is passed, the element itself will be used as key.
+     *
+     * @param  array         $array
+     * @param  callable|null $callback
+     *
+     * @return array
+     */
+    public function groupBy(array $array, callable $callback = null)
+    {
+        $callback = $callback ?: function ($value) {
+            return $value;
+        };
+
+        return array_reduce(
+            $array,
+            function ($buckets, $value) use ($callback) {
+                $key = call_user_func($callback, $value);
+
+                if (!array_key_exists($key, $buckets)) {
+                    $buckets[$key] = [];
+                }
+
+                $buckets[$key][] = $value;
+
+                return $buckets;
+            },
+            []
+        );
     }
 
     /**
@@ -212,5 +324,139 @@ class Transform
         }
 
         return $flattened;
+    }
+
+    /**
+     * Expand a flattened array with dots to a multi-dimensional associative array.
+     *
+     * @param array  $array
+     * @param string $prepend
+     *
+     * @return array
+     */
+    public function expand(array $array, $prepend = '')
+    {
+        $results = [];
+
+        if ($prepend) {
+            $prepend .= '.';
+        }
+
+        foreach ($array as $key => $value) {
+            if ($prepend) {
+                $pos = strpos($key, $prepend);
+
+                if ($pos === 0) {
+                    $key = substr($key, strlen($prepend));
+                }
+            }
+
+            $results = $this->access->set($results, $key, $value);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Reset all numerical indexes of an array (start from zero).
+     * Non-numerical indexes will stay untouched. Returns a new array.
+     *
+     * @param array      $array
+     * @param bool|false $deep
+     *
+     * @return array
+     */
+    public function reset(array $array, $deep = false)
+    {
+        $target = [];
+
+        foreach ($array as $key => $value) {
+            if ($deep && is_array($value)) {
+                $value = $this->reset($value);
+            }
+
+            if (is_numeric($key)) {
+                $target[] = $value;
+            } else {
+                $target[$key] = $value;
+            }
+        }
+
+        return $target;
+    }
+
+    /**
+     * Extend one array with another. Non associative arrays will not be merged
+     * but rather replaced.
+     *
+     * @param array $arrays
+     *
+     * @return array
+     */
+    public function extendDistinct(array $arrays)
+    {
+        $merged     = [];
+
+        foreach (func_get_args() as $array) {
+            foreach ($array as $key => $value) {
+                if (is_array($value) && $this->access->has($merged, $key) && is_array($merged[$key])) {
+                    if ($this->enumerator->isAssoc($value) && $this->enumerator->isAssoc($merged[$key])) {
+                        $merged[$key] = $this->extendDistinct($merged[$key], $value);
+
+                        continue;
+                    }
+                }
+
+                $merged[$key] = $value;
+            }
+        }
+
+        return $merged;
+    }
+
+    /**
+     * Recursively sort an array by keys and values.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public function sortRecursive(array $array)
+    {
+        foreach ($array as &$value) {
+            if (is_array($value)) {
+                $value = $this->sortRecursive($value);
+            }
+        }
+
+        // sort associative array
+        if ($this->enumerator->isAssoc($array)) {
+            ksort($array);
+            // sort regular array
+        } else {
+            sort($array);
+        }
+
+        return $array;
+    }
+
+    public function zip(array $array, array $arrays)
+    {
+        $args = func_get_args();
+        array_shift($args);
+
+        foreach ($array as $key => $value) {
+            $array[$key] = array($value);
+
+            foreach ($args as $k => $v) {
+                $array[$key][] = current($args[$k]);
+
+                if (next($args[$k]) === false && $args[$k] !== array(null)) {
+                    $args[$k] = array(null);
+                }
+            }
+        }
+
+        return $array;
     }
 }

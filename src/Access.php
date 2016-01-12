@@ -156,7 +156,7 @@ class Access
     }
 
     /**
-     * Remove one or many array items from a given array using "dot" notation.
+     * Remove one or many array items from a given array using "dot" or "wildcards" notation.
      *
      * @param array        $array
      * @param array|string $keys
@@ -189,33 +189,5 @@ class Access
         }
 
         return $array;
-    }
-
-    /**
-     * Reset all numerical indexes of an array (start from zero).
-     * Non-numerical indexes will stay untouched. Returns a new array.
-     *
-     * @param array      $array
-     * @param bool|false $deep
-     *
-     * @return array
-     */
-    public function reset(array $array, $deep = false)
-    {
-        $target = [];
-
-        foreach ($array as $key => $value) {
-            if ($deep && is_array($value)) {
-                $value = $this->reset($value);
-            }
-
-            if (is_numeric($key)) {
-                $target[] = $value;
-            } else {
-                $target[$key] = $value;
-            }
-        }
-
-        return $target;
     }
 }

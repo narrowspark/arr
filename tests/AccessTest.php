@@ -46,35 +46,6 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider resetProvider
-     */
-    public function testReset($expected, $array, $deep)
-    {
-        $this->assertEquals($expected, $this->access->reset($array, $deep), $deep);
-    }
-
-    public function resetProvider()
-    {
-        return [
-            [
-                [0 => 'foo', 'baz' => 'bar', 1 => 'bar'],
-                [10 => 'foo', 'baz' => 'bar', '199' => 'bar'],
-                false,
-            ],
-            [
-                [0 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', 1 => 'bar'],
-                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
-                false,
-            ],
-            [
-                [0 => [0 => 'foo', 'baz' => 'bar', 1 => 'bar'], 'baz' => 'bar', 1 => 'bar'],
-                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
-                true,
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider addProvider
      */
     public function testAdd($expected, $array, $key, $value)
@@ -129,42 +100,26 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
     }
 
-    public function testForget()
+    /**
+     * @dataProvider forgetProvider
+     */
+    public function testForget($expected, $array, $key)
     {
-        $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->forget($array, null);
-        $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
+        $this->assertEquals($expected, $this->access->forget($array, $key));
+    }
 
-        $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->forget($array, []);
-        $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
-
-        $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->forget($array, 'products.desk');
-        $this->assertEquals(['products' => []], $array);
-
-        $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->forget($array, 'products.desk.price');
-        $this->assertEquals(['products' => ['desk' => []]], $array);
-
-        $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->forget($array, 'products.final.price');
-        $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
-
-        $array = ['shop' => ['cart' => [150 => 0]]];
-        $array = $this->access->forget($array, 'shop.final.cart');
-        $this->assertEquals(['shop' => ['cart' => [150 => 0]]], $array);
-
-        $array = ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]];
-        $array = $this->access->forget($array, 'products.desk.price.taxes');
-        $this->assertEquals(['products' => ['desk' => ['price' => ['original' => 50]]]], $array);
-
-        $array = ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]];
-        $array = $this->access->forget($array, 'products.desk.final.taxes');
-        $this->assertEquals(['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], $array);
-
-        $array = ['products' => ['desk' => ['price' => 50], null => 'something']];
-        $array = $this->access->forget($array, ['products.amount.all', 'products.desk.price']);
-        $this->assertEquals(['products' => ['desk' => [], null => 'something']], $array);
+    public function forgetProvider()
+    {
+        return [
+            [['products' => ['desk' => ['price' => 100]]], ['products' => ['desk' => ['price' => 100]]], null],
+            [['products' => ['desk' => ['price' => 100]]], ['products' => ['desk' => ['price' => 100]]], []],
+            [['products' => []], ['products' => ['desk' => ['price' => 100]]], 'products.desk'],
+            [['products' => ['desk' => []]], ['products' => ['desk' => ['price' => 100]]], 'products.desk.price'],
+            [['products' => ['desk' => ['price' => 100]]], ['products' => ['desk' => ['price' => 100]]], 'products.final.price'],
+            [['shop' => ['cart' => [150 => 0]]], ['shop' => ['cart' => [150 => 0]]], 'shop.final.cart'],
+            [['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], 'products.desk.final.taxes'],
+            [['products' => ['desk' => ['price' => ['original' => 50]]]], ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], 'products.desk.price.taxes'],
+            [['products' => ['desk' => [], null => 'something']], ['products' => ['desk' => ['price' => 50], null => 'something']], ['products.amount.all', 'products.desk.price']],
+        ];
     }
 }

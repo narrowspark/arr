@@ -1,46 +1,11 @@
 <?php
 namespace Narrowspark\Arr;
 
-use ArrayAccess;
 use Narrowspark\Arr\Traits\ValueTrait;
 
 class Enumerator
 {
     use ValueTrait;
-
-    /**
-     * Return the first element in an array passing a given truth test.
-     *
-     * @param array    $array
-     * @param callable $callback
-     * @param mixed    $default
-     *
-     * @return mixed
-     */
-    public function first(array $array, callable $callback, $default = null)
-    {
-        foreach ($array as $key => $value) {
-            if (call_user_func($callback, $key, $value)) {
-                return $value;
-            }
-        }
-
-        return $this->value($default);
-    }
-
-    /**
-     * Return the last element in an array passing a given truth test.
-     *
-     * @param array    $array
-     * @param callable $callback
-     * @param mixed    $default
-     *
-     * @return mixed
-     */
-    public function last(array $array, callable $callback, $default = null)
-    {
-        return $this->first(array_reverse($array), $callback, $default);
-    }
 
     /**
      * Get a random element from the array supplied.
@@ -74,6 +39,22 @@ class Enumerator
     }
 
     /**
+     * Determines if an array is associative.
+     *
+     * @param array $array
+     *
+     * @return bool
+     */
+    public function isAssoc(array $array)
+    {
+        if ($array === []) {
+            return true;
+        }
+
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
      * Split an array in the given amount of pieces.
      *
      * @param array $array
@@ -94,55 +75,19 @@ class Enumerator
     }
 
     /**
-     * Pluck an array of values from an array.
+     * Check if an array has a numeric index.
      *
-     * @param array|\ArrayAccess $array
-     * @param string             $value
-     * @param string|null        $key
+     * @param array $array
      *
-     * @return array
+     * @return bool
      */
-    public function pluck(array $array, $value, $key = null)
+    public function isIndexed(array $array)
     {
-        $results = [];
-
-        list($value, $key) = $this->explodePluckParameters($value, $key);
-
-        // If the key is "null", we will just append the value to the array and keep
-        // looping. Otherwise we will key the array using the value of the key we
-        // received from the developer. Then we'll return the final array form.
-        if (is_null($key)) {
-            foreach ($array as $item) {
-                $results[] = $this->dataGet($item, $value);
-            }
-        } else {
-            foreach ($array as $item) {
-                $results[$this->dataGet($item, $key)] = $this->dataGet($item, $value);
-            }
+        if ($array == []) {
+            return true;
         }
 
-        return $results;
-    }
-
-    /**
-     * Filter the array using the given Closure.
-     *
-     * @param array    $array
-     * @param callable $callback
-     *
-     * @return array
-     */
-    public function where(array $array, callable $callback)
-    {
-        $filtered = [];
-
-        foreach ($array as $key => $value) {
-            if (call_user_func($callback, $key, $value)) {
-                $filtered[$key] = $value;
-            }
-        }
-
-        return $filtered;
+        return !$this->isAssoc($array);
     }
 
     /**
@@ -163,60 +108,6 @@ class Enumerator
         }
 
         return $array;
-    }
-
-    /**
-     * Get an item from an array or object using "dot" notation.
-     *
-     * @param mixed        $target
-     * @param string|array $key
-     * @param string|null  $default
-     *
-     * @return mixed
-     */
-    public function dataGet($target, $key, $default = null)
-    {
-        if (is_null($key)) {
-            return $target;
-        }
-
-        $key = is_array($key) ? $key : explode('.', $key);
-
-        while (($segment = array_shift($key)) !== null) {
-            if ($segment === '*') {
-                if (!is_array($target) && !$target instanceof ArrayAccess) {
-                    return $this->value($default);
-                }
-
-                $result = $this->pluck($target, $key);
-
-                return in_array('*', $key, true) ? (new Transform())->collapse($result) : $result;
-            }
-
-            if (is_array($target)) {
-                if (!array_key_exists($segment, $target)) {
-                    return $this->value($default);
-                }
-
-                $target = $target[$segment];
-            } elseif ($target instanceof ArrayAccess) {
-                if (!isset($target[$segment])) {
-                    return $this->value($default);
-                }
-
-                $target = $target[$segment];
-            } elseif (is_object($target)) {
-                if (!isset($target->{$segment})) {
-                    return $this->value($default);
-                }
-
-                $target = $target->{$segment};
-            } else {
-                return $this->value($default);
-            }
-        }
-
-        return $target;
     }
 
     /**

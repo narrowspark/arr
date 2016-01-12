@@ -23,22 +23,6 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testRandom()
-    {
-        $this->assertNull($this->enumerator->random([]));
-
-        $testArray = [
-            'one'   => 'a',
-            'two'   => 'b',
-            'three' => 'c',
-        ];
-
-        $testArrayValues = array_values($testArray);
-        $randomArrayValue = $this->enumerator->random($testArray);
-
-        $this->assertTrue(in_array($randomArrayValue, $testArrayValues));
-    }
-
     public function splitProvider()
     {
         return [
@@ -60,6 +44,60 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
             [
                 [['a' => 1], ['b' => 2]], ['a' => 1, 'b' => 2], 2, true,
             ],
+        ];
+    }
+
+    public function testRandom()
+    {
+        $this->assertNull($this->enumerator->random([]));
+
+        $testArray = [
+            'one'   => 'a',
+            'two'   => 'b',
+            'three' => 'c',
+        ];
+
+        $testArrayValues = array_values($testArray);
+        $randomArrayValue = $this->enumerator->random($testArray);
+
+        $this->assertTrue(in_array($randomArrayValue, $testArrayValues));
+    }
+
+    /**
+     * @dataProvider isAssociativeProvider
+     */
+    public function testIsAssociative($expected, $array)
+    {
+        $this->assertEquals($expected, $this->enumerator->isAssoc($array));
+    }
+
+    public function isAssociativeProvider()
+    {
+        return [
+            [false, [0, '1', 2]],
+            [true, [99 => 0, 5 => 1, 2 => 2]],
+            [true, ['foo' => 'bar', 1, 2]],
+            [true, ['foo' => 'bar', 'bar' => 'baz']],
+            [true, []],
+        ];
+    }
+
+    /**
+     * @dataProvider isIndexProvider
+     */
+    public function isIndexed($expected, $array)
+    {
+        $this->assertEquals($expected, $this->enumerator->isIndexed($array));
+    }
+
+    public function isIndexProvider()
+    {
+        return [
+            [false, [1, 2, 3, 'a' => 'foo']],
+            [false, [0 => 3, 'a' => 'foo']],
+            [true, [1, 2, 3]],
+            [true, [0 => 1, '3' => 2]],
+            [true, []],
         ];
     }
 }
