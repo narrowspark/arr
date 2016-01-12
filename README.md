@@ -1,4 +1,5 @@
-# arr
+
+A PHP collection of utilities to manipulate arrays. Compatible with PHP 5.6+, PHP 7, and HHVM.
 
 [![Author](http://img.shields.io/badge/author-@anolilab-blue.svg?style=flat-square)](https://twitter.com/anolilab)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/narrowspark/arr.svg?style=flat-square)](https://packagist.org/packages/narrowspark/arr)
@@ -15,7 +16,14 @@
 [![Build Status](https://img.shields.io/travis/narrowspark/arr/master.svg?style=flat-square)](https://travis-ci.org/narrowspark/arr)
 [![Quality Score](https://img.shields.io/scrutinizer/g/narrowspark/arr.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr)
 
-## Install
+* [Why?](#why)
+* [Installation](#installation)
+* [Arr and StaticArr](#arr-and-staticarr)
+* [Instance methods](#instance-methods)
+
+## Why?
+
+## Installation
 
 Via Composer
 
@@ -23,11 +31,31 @@ Via Composer
 $ composer require narrowspark/arr
 ```
 
-## Usage
+or
+
+``` json
+"require": {
+    "narrowspark/arr": "~1.0"
+}
+```
+
+## Arr and StaticArr
+
+All methods listed under "Instance methods" are available as part of a wrapper.
 
 ``` php
-echo "test";
+use Narrowspark\Arr\Arr;
+use Narrowspark\Arr\StaticArr;
+
+// Translates to Access::set(['foo' => bar], 'arr', 'narrowspark');
+// Returns a new array with the added key and value;
+// ['foo' => bar, 'arr' => 'narrowsaprk']
+(new Arr())->set(['foo' => bar], 'arr', 'narrowspark');
+// or you can make a static call
+StaticArr::set(['foo' => bar], 'arr', 'narrowspark');
 ```
+
+## Instance Methods
 
 ## Change log
 
@@ -35,9 +63,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 
 ## Testing
 
-``` bash
-$ composer test
-```
+From the project directory, tests can be ran using phpunit
 
 ## Contributing
 
