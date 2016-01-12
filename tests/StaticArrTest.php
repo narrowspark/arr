@@ -22,7 +22,6 @@ class StaticArrTest extends \PHPUnit_Framework_TestCase
 
     public function testOneArgsCall()
     {
-
         $array = ['products' => ['desk' => ['price' => 100]]];
 
         $this->assertTrue(in_array(StaticArr::random($array), $array));

@@ -11,16 +11,19 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->transform = new Transform();
     }
+
     /**
      * @dataProvider extendProvider
      */
-    public function testExtend($expected, $array1, $array2) {
+    public function testExtend($expected, $array1, $array2)
+    {
         $arr = $this->transform->extend($array1, $array2);
 
         $this->assertEquals($expected, $arr);
     }
 
-    public function extendProvider() {
+    public function extendProvider()
+    {
         return [
             [
                 ['foo' => 'bar', 'bar' => 'bar', [1, 2, 3]],

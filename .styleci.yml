@@ -61,6 +61,5 @@ finder:
   exclude:
     - "build"
     - "vendor"
-    - "tests"
   name:
     - "*.php"

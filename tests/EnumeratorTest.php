@@ -59,7 +59,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 [['a' => 1], ['b' => 2]], ['a' => 1, 'b' => 2], 2, true,
-            ]
+            ],
         ];
     }
 }

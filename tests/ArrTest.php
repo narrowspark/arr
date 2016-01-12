@@ -22,7 +22,6 @@ class ArrTest extends \PHPUnit_Framework_TestCase
 
     public function testOneArgsCall()
     {
-
         $array = ['products' => ['desk' => ['price' => 100]]];
 
         $this->assertTrue(in_array((new Arr())->random($array), $array));
@@ -33,6 +32,6 @@ class ArrTest extends \PHPUnit_Framework_TestCase
      */
     public function testBadMethodCall()
     {
-        $result = (new Arr)->invalidMethod('foo');
+        $result = (new Arr())->invalidMethod('foo');
     }
 }

@@ -19,9 +19,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             'b' => [
                 'c' => 2,
                 'd' => [
-                    'e' => 3
-                ]
-            ]
+                    'e' => 3,
+                ],
+            ],
         ];
 
         $expected = [
@@ -29,9 +29,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             'b' => [
                 'c' => 2,
                 'd' => [
-                    'e' => 4
-                ]
-            ]
+                    'e' => 4,
+                ],
+            ],
         ];
 
         $increment = function ($value) {
@@ -59,7 +59,7 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             [
                 [0 => 'foo', 'baz' => 'bar', 1 => 'bar'],
                 [10 => 'foo', 'baz' => 'bar', '199' => 'bar'],
-                false
+                false,
             ],
             [
                 [0 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', 1 => 'bar'],
@@ -86,9 +86,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [['list' => [1, 2, 3]], ['list' => [1, 2]], 'list', 3],
-            [['value' => [1, 2]], ['value' => 1], 'value', 2,],
-            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => 1]], 'nested.value', 2,],
-            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => [1]]], 'nested.value', 2,],
+            [['value' => [1, 2]], ['value' => 1], 'value', 2],
+            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => 1]], 'nested.value', 2],
+            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => [1]]], 'nested.value', 2],
         ];
     }
 
