@@ -23,7 +23,7 @@
 
     <testsuites>
         <testsuite name="Narrowspark Test Suite">
-            <directory suffix="AccessTest.php">./tests</directory>
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
 

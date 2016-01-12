@@ -15,11 +15,11 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider splitProvider
      */
-    public function testSplit($expectedArray, $array, $splitIntoNumber, $numberOfPieces)
+    public function testSplit($expectedArray, $array, $splitIntoNumber, $preserveKeys)
     {
         $this->assertSame(
             $expectedArray,
-            $this->enumerator->split($array, $numberOfPieces, $splitIntoNumber)
+            $this->enumerator->split($array, $splitIntoNumber, $preserveKeys)
         );
     }
 
@@ -33,7 +33,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
             'three' => 'c',
         ];
 
-        $testArrayValues = array_values($this->testArray);
+        $testArrayValues = array_values($testArray);
         $randomArrayValue = $this->enumerator->random($testArray);
 
         $this->assertTrue(in_array($randomArrayValue, $testArrayValues));
@@ -43,22 +43,22 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                ['a', 'b', 'c', 'd'], 2, [['a', 'b'], ['c', 'd']],
+                [['a', 'b'], ['c', 'd']], ['a', 'b', 'c', 'd'], 2, false,
             ],
             [
-                ['a', 'b', 'c', 'd', 'e'], 2, [['a', 'b', 'c'], ['d', 'e']],
+                [['a', 'b', 'c'], ['d', 'e']], ['a', 'b', 'c', 'd', 'e'], 2, false,
             ],
             [
-                ['a', 'b', 'c', 'd', 'e'], 3, [['a', 'b'], ['c', 'd'], ['e']],
+                [['a', 'b'], ['c', 'd'], ['e']], ['a', 'b', 'c', 'd', 'e'], 3, false,
             ],
             [
-                [], [], 2, false
+                [], [], 2, false,
             ],
             [
-                ['a', 'b'], [['a'], ['b']], 2, false
+                [['a'], ['b']], ['a', 'b'], 2, false,
             ],
             [
-                ['a' => 1, 'b' => 2], [['a' => 1], ['b' => 2]], 2, true
+                [['a' => 1], ['b' => 2]], ['a' => 1, 'b' => 2], 2, true,
             ]
         ];
     }

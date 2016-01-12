@@ -53,12 +53,43 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->access->reset($array, $deep), $deep);
     }
 
+    public function resetProvider()
+    {
+        return [
+            [
+                [0 => 'foo', 'baz' => 'bar', 1 => 'bar'],
+                [10 => 'foo', 'baz' => 'bar', '199' => 'bar'],
+                false
+            ],
+            [
+                [0 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', 1 => 'bar'],
+                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
+                false,
+            ],
+            [
+                [0 => [0 => 'foo', 'baz' => 'bar', 1 => 'bar'], 'baz' => 'bar', 1 => 'bar'],
+                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
+                true,
+            ],
+        ];
+    }
+
     /**
-     * @dataProvider array_add_provider
+     * @dataProvider addProvider
      */
     public function testAdd($expected, $array, $key, $value)
     {
         $this->assertEquals($expected, $this->access->add($array, $key, $value));
+    }
+
+    public function addProvider()
+    {
+        return [
+            [['list' => [1, 2, 3]], ['list' => [1, 2]], 'list', 3],
+            [['value' => [1, 2]], ['value' => 1], 'value', 2,],
+            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => 1]], 'nested.value', 2,],
+            [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => [1]]], 'nested.value', 2,],
+        ];
     }
 
     public function testGet()
@@ -101,70 +132,39 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     public function testForget()
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->forget($array, null);
+        $array = $this->access->forget($array, null);
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->forget($array, []);
+        $array = $this->access->forget($array, []);
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->forget($array, 'products.desk');
+        $array = $this->access->forget($array, 'products.desk');
         $this->assertEquals(['products' => []], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->forget($array, 'products.desk.price');
+        $array = $this->access->forget($array, 'products.desk.price');
         $this->assertEquals(['products' => ['desk' => []]], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $this->access->forget($array, 'products.final.price');
+        $array = $this->access->forget($array, 'products.final.price');
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
 
         $array = ['shop' => ['cart' => [150 => 0]]];
-        $this->access->forget($array, 'shop.final.cart');
+        $array = $this->access->forget($array, 'shop.final.cart');
         $this->assertEquals(['shop' => ['cart' => [150 => 0]]], $array);
 
         $array = ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]];
-        $this->access->forget($array, 'products.desk.price.taxes');
+        $array = $this->access->forget($array, 'products.desk.price.taxes');
         $this->assertEquals(['products' => ['desk' => ['price' => ['original' => 50]]]], $array);
 
         $array = ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]];
-        $this->access->forget($array, 'products.desk.final.taxes');
+        $array = $this->access->forget($array, 'products.desk.final.taxes');
         $this->assertEquals(['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], $array);
 
         $array = ['products' => ['desk' => ['price' => 50], null => 'something']];
-        $this->access->forget($array, ['products.amount.all', 'products.desk.price']);
+        $array = $this->access->forget($array, ['products.amount.all', 'products.desk.price']);
         $this->assertEquals(['products' => ['desk' => [], null => 'something']], $array);
-    }
-
-    public function resetProvider()
-    {
-        return [
-            [
-                [0 => 'foo', 'baz' => 'bar', 1 => 'bar'],
-                [10 => 'foo', 'baz' => 'bar', '199' => 'bar'],
-                false
-            ],
-            [
-                [0 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', 1 => 'bar'],
-                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
-                false,
-            ],
-            [
-                [0 => [0 => 'foo', 'baz' => 'bar', 1 => 'bar'], 'baz' => 'bar', 1 => 'bar'],
-                [10 => [10 => 'foo', 'baz' => 'bar', '199' => 'bar'], 'baz' => 'bar', '199' => 'bar'],
-                true,
-            ],
-        ];
-    }
-
-    public function addProvider()
-    {
-        return [
-            [['list' => [1, 2, 3]], ['list' => [1, 2]], 'list', 3],
-            // [['value' => [1, 2]], ['value' => 1], 'value', 2,],
-            // [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => 1]], 'nested.value', 2,],
-            // [['nested' => ['value' => [1, 2]]], ['nested' => ['value' => [1]]], 'nested.value', 2,],
-        ];
     }
 }

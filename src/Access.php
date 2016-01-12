@@ -23,11 +23,11 @@ class Access
     public function set(array $array, $key, $value)
     {
         if ($key === null) {
-            return $current = $value;
+            return $array = $value;
         }
 
         $keys    = $this->splitPath($key);
-        $current = & $array;
+        $current =& $array;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -39,7 +39,7 @@ class Access
                 $current[$key] = [];
             }
 
-            $current = & $current[$key];
+            $current =& $current[$key];
         }
 
         $current[array_shift($keys)] = $value;
@@ -96,7 +96,7 @@ class Access
         }
 
         $target[] = $value;
-        $this->set($array, $key, $target);
+        $array = $this->set($array, $key, $target);
 
         return $array;
     }
@@ -142,14 +142,14 @@ class Access
     public function update(array $array, $key, callable $cb)
     {
         $keys    = $this->splitPath($key);
-        $current = & $array;
+        $current =& $array;
 
         foreach ($keys as $key) {
             if (!isset($current[$key])) {
                 return $array;
             }
 
-            $current = & $current[$key];
+            $current =& $current[$key];
         }
 
         $current = call_user_func($cb, $current);
@@ -165,31 +165,32 @@ class Access
      */
     public function forget(array $array, $keys)
     {
-        $original = & $array;
+        $original = &$array;
         $keys     = (array) $keys;
 
         if (count($keys) === 0) {
-            return;
+            return $original;
         }
 
         foreach ($keys as $key) {
             $parts = $this->splitPath($key);
-
             // clean up before each pass
-            $array = & $original;
+            $arr = &$original;
 
             while (count($parts) > 1) {
                 $part = array_shift($parts);
 
-                if (isset($array[$part]) && is_array($array[$part])) {
-                    $array = & $array[$part];
+                if (isset($arr[$part]) && is_array($arr[$part])) {
+                    $arr = &$arr[$part];
                 } else {
                     continue 2;
                 }
             }
 
-            unset($array[array_shift($parts)]);
+            unset($arr[array_shift($parts)]);
         }
+
+        return $array;
     }
 
     /**
@@ -218,20 +219,5 @@ class Access
         }
 
         return $target;
-    }
-
-    /**
-     * Get all of the given array except for a specified array of items.
-     *
-     * @param array    $array
-     * @param string[] $keys
-     *
-     * @return array
-     */
-    public function except(array $array, $keys)
-    {
-        $this->forget($array, $keys);
-
-        return $array;
     }
 }
