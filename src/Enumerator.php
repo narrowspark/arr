@@ -139,21 +139,4 @@ class Enumerator
     {
         return array_intersect_key($input, array_flip(preg_grep($pattern, array_keys($input), $flags)));
     }
-
-    /**
-     * Explode the "value" and "key" arguments passed to "pluck".
-     *
-     * @param string      $value
-     * @param string|null $key
-     *
-     * @return array[]
-     */
-    protected function explodePluckParameters($value, $key)
-    {
-        $value = is_array($value) ? $value : explode('.', $key);
-
-        $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
-
-        return [$value, $key];
-    }
 }
