@@ -440,6 +440,15 @@ class Transform
         return $array;
     }
 
+    /**
+     * Will turn each element in $arr into an array then appending
+     * the associated indexs from the other arrays into this array as well.
+     *
+     * @param array $array
+     * @param array $arrays
+     *
+     * @return array
+     */
     public function zip(array $array, array $arrays)
     {
         $args = func_get_args();
