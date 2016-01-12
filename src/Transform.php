@@ -163,6 +163,30 @@ class Transform
     }
 
     /**
+     * Stripe all empty items.
+     *
+     * @param array $source
+     *
+     * @return array
+     */
+    public function stripEmpty(array $array)
+    {
+        return array_filter($array, function ($item) {
+            if (is_null($item)) {
+                return false;
+            }
+
+            $item = trim($item);
+
+            if (!$item) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    /**
      * Remove duplicated values.
      *
      * @param array        $elements
