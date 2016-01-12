@@ -47,14 +47,14 @@ class Transform
 
         foreach ($keys as $key) {
             if (!isset($array[$key])) {
-                return null;
+                return;
             }
 
             $array = $array[$key];
         }
 
         if (!is_array($array)) {
-            return null;
+            return;
         }
 
         return array_pop($array);
