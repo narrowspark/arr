@@ -55,8 +55,8 @@ class Traverse
      * Returns whether every element of the array satisfies the given predicate or not.
      * Works with Iterators too.
      *
-     * @param  array    $array
-     * @param  callable $predicate
+     * @param array    $array
+     * @param callable $predicate
      *
      * @return bool
      */
