@@ -20,6 +20,13 @@ A PHP collection of utilities to manipulate arrays. Compatible with PHP 5.6+, PH
 * [Installation](#installation)
 * [Arr and StaticArr](#arr-and-staticarr)
 * [Instance methods](#instance-methods)
+    * [Access methods](#access)
+        * [set](#set)
+        * [get](#get)
+        * [add](#add)
+        * [has](#has)
+        * [update](#update)
+        * [forget](#forget)
 
 ## Why?
 
@@ -56,6 +63,42 @@ StaticArr::set(['foo' => bar], 'arr', 'narrowspark');
 ```
 
 ## Instance Methods
+### Access
+#### set
+``` php
+
+```
+
+#### get
+``` php
+
+```
+
+#### add
+``` php
+
+```
+
+#### has
+``` php
+
+```
+
+#### update
+``` php
+
+```
+
+#### forget
+``` php
+
+```
+
+### Enumerator
+
+### Transform
+
+### Traverse
 
 ## Change log
 
