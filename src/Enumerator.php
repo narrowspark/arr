@@ -119,7 +119,7 @@ class Enumerator
      *
      * @return string
      */
-    public function pregReplaceSub($pattern, &$replacements, $subject)
+    public function pregReplaceSub($pattern, $replacements, $subject)
     {
         return preg_replace_callback($pattern, function ($match) use (&$replacements) {
             return array_shift($replacements);
