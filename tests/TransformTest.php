@@ -72,7 +72,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
 
     public function testEvery()
     {
-        $data = [
+        $array = [
             6 => 'a',
             4 => 'b',
             7 => 'c',
@@ -81,10 +81,10 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             3 => 'f',
         ];
 
-        $this->assertEquals(['a', 'e'], $this->transform->every($data, 4));
-        $this->assertEquals(['b', 'f'], $this->transform->every($data, 4, 1));
-        $this->assertEquals(['c'], $this->transform->every($data, 4, 2));
-        $this->assertEquals(['d'], $this->transform->every($data, 4, 3));
+        $this->assertEquals(['a', 'e'], $this->transform->every($array, 4));
+        $this->assertEquals(['b', 'f'], $this->transform->every($array, 4, 1));
+        $this->assertEquals(['c'], $this->transform->every($array, 4, 2));
+        $this->assertEquals(['d'], $this->transform->every($array, 4, 3));
     }
 
     /**
@@ -185,6 +185,12 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             [['foo.bar' => 'baz'], ['foo' => ['bar' => 'baz']], ''],
             [['foo.bar.baz' => 'biz'], ['foo' => ['bar' => ['baz' => 'biz']]], ''],
         ];
+    }
+
+    public function testDotCache()
+    {
+        $this->assertEquals(['foo' => 'bar'], $this->transform->dot(['foo' => 'bar'], ''));
+        $this->assertEquals(['foo' => 'bar'], $this->transform->dot(['foo' => 'bar'], ''));
     }
 
     public function testGroupBy()
@@ -321,5 +327,249 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             null,
             $this->transform->pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'dont')
         );
+    }
+
+    /**
+     * @dataProvider mergeProvider
+     */
+    public function testMerge($expected, $array, $array2)
+    {
+        $this->assertEquals(
+            $expected,
+            $this->transform->merge($array, $array2)
+        );
+    }
+
+    public function mergeProvider()
+    {
+        return [
+            [
+                [1, 2, 3, 4, 5],
+                [1, 2],
+                [3, 4, 5],
+            ],
+            [
+                ['a' => 'b', 'c' => 'd', 'e' => 'f'],
+                ['a' => 'g', 'c' => 'd'],
+                ['a' => 'b', 'e' => 'f'],
+            ],
+            [
+                ['a' => [1, 'b' => 'c', 2, 3, 4, 5]],
+                ['a' => [1, 'b' => 'd', 2]],
+                ['a' => [3, 4, 'b' => 'c', 5]],
+            ],
+        ];
+    }
+
+    public function testReindex()
+    {
+        $array = ['foo' => 'bar'];
+        $map   = ['foo' => 'baz'];
+
+        $expected = [
+            'foo' => 'bar',
+            'baz' => 'bar',
+        ];
+
+        $this->assertEquals(
+            $expected,
+            $this->transform->reindex($array, $map)
+        );
+
+        $expected = ['baz' => 'bar'];
+        $this->assertEquals(
+            $expected,
+            $this->transform->reindex($array, $map, false)
+        );
+    }
+
+    public function testNormalize()
+    {
+        $array = [
+            'one',
+            'two' => 'three',
+            'four',
+        ];
+
+        $default = 'default';
+
+        $this->assertEquals(
+            [
+                'one' => $default,
+                'two' => 'three',
+                'four' => $default,
+            ],
+            $this->transform->normalize($array, $default)
+        );
+    }
+
+    public function testCombine()
+    {
+        $users = [
+            ['id' => 1, 'name' => 'a'],
+            ['id' => 2, 'name' => 'b'],
+            ['id' => 3, 'name' => 'b'],
+        ];
+
+        $closure = function ($user) {
+            yield $user['name'] => $user['id'];
+        };
+
+        // overwriting existing names
+        $this->assertEquals(
+            [
+                'a' => 1,
+                'b' => 3,
+            ],
+            $this->transform->combine($users, $closure)
+        );
+
+        // not overwriting existing names
+        $this->assertEquals(
+            [
+                'a' => 1,
+                'b' => 2,
+            ],
+            $this->transform->combine($users, $closure, false)
+        );
+    }
+
+    public function testWithout()
+    {
+        $array = [
+            'a' => 1,
+            'b' => 3,
+            'c' => 4,
+        ];
+        $this->assertEquals(
+            [
+                1,
+                4,
+            ],
+            $this->transform->without($array, [3])
+        );
+    }
+
+    public function testCollapse()
+    {
+        $from = [
+            'test' => [
+                'a' => 'vala',
+                'b' => 'valb',
+                'c' => 'valc',
+                'd' => [
+                    'd0',
+                    'd1',
+                    ],
+                ],
+            'top' => 'blah',
+        ];
+
+        $this->assertEquals(
+            [
+                'test.a' => 'vala',
+                'test.b' => 'valb',
+                'test.c' => 'valc',
+                'test.d.0' => 'd0',
+                'test.d.1' => 'd1',
+                'top' => 'blah',
+            ],
+            $this->transform->collapse($from)
+        );
+    }
+
+    public function testComplexCollapse()
+    {
+        $from = [
+            'textbox' => [
+                'd' => ['text1'],
+                'f' => [
+                    'g' => ['val1', 'val2'],
+                ],
+            ],
+            'h.a' => ['text1'],
+        ];
+
+        $this->assertEquals(
+            [
+                'textbox.d.0'   => 'text1',
+                'textbox.f.g.0' => 'val1',
+                'textbox.f.g.1' => 'val2',
+                'h.0'           => 'text1',
+            ],
+            $this->transform->collapse($from)
+        );
+    }
+
+    public function testCollapseAndExpand()
+    {
+        $from = [
+            'textbox' => [
+                'd' => ['text1'],
+                'f' => [
+                    'g' => ['val1', 'val2'],
+                ],
+            ],
+            'h.a' => ['text1'],
+        ];
+
+        $to = [
+            'textbox' => [
+                'd' => ['text1'],
+                'f' => [
+                    'g' => ['val1', 'val2'],
+                ],
+            ],
+            'h' => ['text1'],
+        ];
+
+        $this->assertEquals(
+            $to,
+            $this->transform->expand($this->transform->collapse($from))
+        );
+    }
+
+    public function testDivide()
+    {
+
+        $this->assertEquals(
+            [['textbox', 'foo'], [['d' => 'text1'], 'bar']],
+            $this->transform->divide([
+                'textbox' => ['d' => 'text1',],
+                'foo' => 'bar'
+            ])
+        );
+    }
+
+    public function testStripEmpty()
+    {
+        $this->assertEquals(
+            ['textbox' => 'test', 'foo',],
+            $this->transform->stripEmpty([
+                'textbox' => 'test',
+                'foo',
+                'a' => '',
+                'b' => null
+            ])
+        );
+    }
+
+    public function testSort()
+    {
+        $array = [
+            ['name' => 'Desk'],
+            ['name' => 'Chair'],
+        ];
+
+        $array = array_values($this->transform->sort($array, function ($value) {
+            return $value['name'];
+        }));
+
+        $expected = [
+            ['name' => 'Chair'],
+            ['name' => 'Desk'],
+        ];
+
+        $this->assertEquals($expected, $array);
     }
 }

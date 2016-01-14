@@ -47,6 +47,14 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testOnly()
+    {
+        $array = ['name' => 'Desk', 'price' => 100, 'orders' => 10];
+        $array = $this->enumerator->only($array, ['name', 'price']);
+
+        $this->assertEquals(['name' => 'Desk', 'price' => 100], $array);
+    }
+
     public function testRandom()
     {
         $this->assertNull($this->enumerator->random([]));

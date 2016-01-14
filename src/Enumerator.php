@@ -139,4 +139,28 @@ class Enumerator
     {
         return array_intersect_key($input, array_flip(preg_grep($pattern, array_keys($input), $flags)));
     }
+
+    /**
+     * Return the closest found value from array.
+     *
+     * @param array $array
+     * @param sting $value
+     *
+     * @return mixed
+     */
+    public function closest(array $array, $value)
+    {
+        sort($array);
+        $closest = $array[0];
+
+        for ($i = 1, $j = count($array), $k = 0; $i < $j; $i++, $k++) {
+            $middleValue = ($array[$i] - $array[$k]) / 2 + $array[$k];
+
+            if ($value >= $middleValue) {
+                $closest = $array[$i];
+            }
+        }
+
+        return $this->value($closest);
+    }
 }

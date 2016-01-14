@@ -129,25 +129,26 @@ class Transform
     }
 
     /**
-     * Collapse an array of arrays into a single array.
-     *
-     * @param array $array
-     *
-     * @return array
+     * Collapse a nested array down to an array of flat key=>value pairs
      */
     public function collapse(array $array)
     {
-        $results = [];
+        $newArray = [];
 
-        foreach ($array as $values) {
-            if (!is_array($values)) {
-                continue;
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                // strip any manually added '.'
+                if (preg_match('/\./', $key)) {
+                    $key = substr($key, 0, -2);
+                }
+
+                $this->recurseCollapse($value, $newArray, (array) $key);
+            } else {
+                $newArray[$key] = $value;
             }
-
-            $results = array_merge($results, $values);
         }
 
-        return $results;
+        return $newArray;
     }
 
     /**
@@ -176,33 +177,12 @@ class Transform
                 return false;
             }
 
-            $item = trim($item);
-
-            if (!$item) {
+            if (!trim($item)) {
                 return false;
             }
 
             return true;
         });
-    }
-
-    /**
-     * Remove duplicated values.
-     *
-     * @param array        $elements
-     * @param Closure|null $iterator
-     *
-     * @return array
-     */
-    public function unique(array $elements, Closure $iterator = null)
-    {
-        if ($iterator !== null) {
-            $elements = array_filter($elements, $iterator);
-        } else {
-            $elements = array_unique($elements);
-        }
-
-        return array_values($elements);
     }
 
     /**
@@ -228,16 +208,16 @@ class Transform
      * Reindexes a list of values.
      *
      * @param array $array
-     * @param array $map          An map of correspondances of the form
-     *                            ['currentIndex' => 'newIndex'].
-     * @param bool  $keepUnmapped Whether or not to keep keys that are not
-     *                            remapped.
+     * @param array $map      An map of correspondances of the form
+     *                        ['currentIndex' => 'newIndex'].
+     * @param bool  $unmapped Whether or not to keep keys that are not
+     *                        remapped.
      *
      * @return array
      */
-    public function reindex(array $array, array $map, $keepUnmapped = true)
+    public function reindex(array $array, array $map, $unmapped = true)
     {
-        $reindexed = $keepUnmapped
+        $reindexed = $unmapped
             ? $array
             : [];
 
@@ -251,28 +231,57 @@ class Transform
     }
 
     /**
-     * Merges two arrays recursively.
+     * Merges two or more arrays into one recursively.
      *
-     * @param array $first  Original data.
-     * @param array $second Data to be merged.
+     * @param array $arrays.
      *
      * @return array
      */
-    public function merge(array $first, array $second)
+    public function merge(array $arrays)
     {
-        foreach ($second as $key => $value) {
-            $shouldBeMerged = (
-                isset($first[$key])
-                && is_array($first[$key])
-                && is_array($value)
-            );
+        $args  = func_get_args();
+        $array = array_shift($args);
 
-            $first[$key] = $shouldBeMerged
-                ? $this->merge($first[$key], $value)
-                : $value;
+        while (!empty($args)) {
+            $next = array_shift($args);
+
+            foreach ($next as $key => $value) {
+                if (is_int($key)) {
+                    $array[] = $value;
+                } elseif (is_array($value) && isset($array[$key]) && is_array($array[$key])) {
+                    $array[$key] = $this->merge($array[$key], $value);
+                } else {
+                    $array[$key] = $value;
+                }
+            }
         }
 
-        return $first;
+        return $array;
+    }
+
+    /**
+     *  Makes every value that is numerically indexed a key, given $default
+     *  as value.
+     *
+     *  @param array $array
+     *  @param mixed $default
+     *
+     *  @return array
+     */
+    public function normalize(array $array, $default)
+    {
+        $normalized = [];
+
+        foreach ($array as $key => $value) {
+            if (is_numeric($key)) {
+                $key   = $value;
+                $value = $default;
+            }
+
+            $normalized[$key] = $value;
+        }
+
+        return $normalized;
     }
 
     /**
@@ -505,6 +514,40 @@ class Transform
     }
 
     /**
+     * Sort the array using the given callback.
+     *
+     * @param array    $array
+     * @param callable $callback
+     * @param int      $options
+     * @param bool     $descending
+     *
+     * @return array
+     */
+    public function sort(array $array, callable $callback, $options = SORT_REGULAR, $descending = false)
+    {
+        $results = [];
+
+        // First we will loop through the items and get the comparator from a callback
+        // function which we were given. Then, we will sort the returned values and
+        // and grab the corresponding values for the sorted keys from this array.
+        foreach ($array as $key => $value) {
+            $results[$key] = $callback($value, $key);
+        }
+
+        $descending ? arsort($results, $options)
+                    : asort($results, $options);
+
+        // Once we have sorted all of the keys in the array, we will loop through them
+        // and grab the corresponding model so we can set the underlying items list
+        // to the sorted version. Then we'll just return the collection instance.
+        foreach (array_keys($results) as $key) {
+            $results[$key] = $array[$key];
+        }
+
+        return $results;
+    }
+
+    /**
      * Recursively sort an array by keys and values.
      *
      * @param array $array
@@ -557,5 +600,29 @@ class Transform
         }
 
         return $array;
+    }
+
+    /**
+     * Recurse through an array, add the leaf items to the $newArray var
+     *
+     * @param array $subject
+     * @param array &$newArray
+     * @param array $stack
+     *
+     * @return array
+     */
+    private function recurseCollapse(array $subject, array &$newArray, $stack = [])
+    {
+        foreach ($subject as $key => $value) {
+            $fstack = array_merge($stack, [$key]);
+
+            if (is_array($value)) {
+                $this->recurseCollapse($value, $newArray, $fstack);
+            } else {
+                $top       = array_shift($fstack);
+                $arrayPart = count($fstack) ? '.' . implode('.', $fstack): '';
+                $newArray[$top . $arrayPart] = $value;
+            }
+        }
     }
 }
