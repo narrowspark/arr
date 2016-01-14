@@ -531,12 +531,11 @@ class TransformTest extends \PHPUnit_Framework_TestCase
 
     public function testDivide()
     {
-
         $this->assertEquals(
             [['textbox', 'foo'], [['d' => 'text1'], 'bar']],
             $this->transform->divide([
-                'textbox' => ['d' => 'text1',],
-                'foo' => 'bar'
+                'textbox' => ['d' => 'text1'],
+                'foo' => 'bar',
             ])
         );
     }
@@ -544,12 +543,12 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     public function testStripEmpty()
     {
         $this->assertEquals(
-            ['textbox' => 'test', 'foo',],
+            ['textbox' => 'test', 'foo'],
             $this->transform->stripEmpty([
                 'textbox' => 'test',
                 'foo',
                 'a' => '',
-                'b' => null
+                'b' => null,
             ])
         );
     }
