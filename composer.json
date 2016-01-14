@@ -26,7 +26,6 @@
         "narrowspark/php-cs-fixer-config" : "~1.1.5",
         "mockery/mockery"                 : "~0.9.4",
         "phpunit/phpunit"                 : "~5.1.3",
-        "scrutinizer/ocular"              : "~1.1",
         "roave/security-advisories"       : "dev-master"
     },
     "autoload": {
