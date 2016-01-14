@@ -620,7 +620,7 @@ class Transform
                 $this->recurseCollapse($value, $newArray, $fstack);
             } else {
                 $top       = array_shift($fstack);
-                $arrayPart = count($fstack) ? '.' . implode('.', $fstack): '';
+                $arrayPart = count($fstack) ? '.' . implode('.', $fstack) : '';
                 $newArray[$top . $arrayPart] = $value;
             }
         }
