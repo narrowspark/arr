@@ -118,13 +118,14 @@ class Transform
 
         foreach ($array as $key => $value) {
             $combinator = call_user_func($callback, $value, $key);
+
+            if (defined('HHVM_VERSION')) {
+                $combinator->next();
+            }
+
             $index      = $combinator->key();
 
             if ($overwrite || !isset($combined[$index])) {
-                if (defined('HHVM_VERSION')) {
-                    $combinator->next();
-                }
-
                 $combined[$index] = $combinator->current();
             }
         }
