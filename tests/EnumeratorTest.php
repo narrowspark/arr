@@ -124,4 +124,11 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         $array = $this->enumerator->prepend(['one' => 1, 'two' => 2], 0, 'zero');
         $this->assertEquals(['zero' => 0, 'one' => 1, 'two' => 2], $array);
     }
+
+    public function testClosest()
+    {
+        $array = ['foobartest', 'bar', 'foo'];
+
+        $this->assertEquals('foobartest', $this->enumerator->closest($array, 'test'));
+    }
 }

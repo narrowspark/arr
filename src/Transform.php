@@ -118,7 +118,7 @@ class Transform
 
         foreach ($array as $key => $value) {
             $combinator = call_user_func($callback, $value, $key);
-
+            // fix for hhvm #1871 bug
             if (defined('HHVM_VERSION')) {
                 $combinator->next();
             }

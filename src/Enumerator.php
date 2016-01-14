@@ -111,36 +111,6 @@ class Enumerator
     }
 
     /**
-     * Replace a given pattern with each value in the array in sequentially.
-     *
-     * @param string $pattern
-     * @param array  $replacements
-     * @param string $subject
-     *
-     * @return string
-     */
-    public function pregReplaceSub($pattern, $replacements, $subject)
-    {
-        return preg_replace_callback($pattern, function ($match) use (&$replacements) {
-            return array_shift($replacements);
-        }, $subject);
-    }
-
-    /**
-     * A shorter way to run a match on the array's keys rather than the values.
-     *
-     * @param string $pattern
-     * @param array  $input
-     * @param int    $flags
-     *
-     * @return array
-     */
-    public function pregGrepKeys($pattern, array $input, $flags = 0)
-    {
-        return array_intersect_key($input, array_flip(preg_grep($pattern, array_keys($input), $flags)));
-    }
-
-    /**
      * Return the closest found value from array.
      *
      * @param array $array
