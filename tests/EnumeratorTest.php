@@ -108,4 +108,20 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
             [true, []],
         ];
     }
+
+    public function testIsIndexed()
+    {
+        $this->assertTrue($this->enumerator->isIndexed([]));
+        $this->assertTrue($this->enumerator->isIndexed(['baa', 'foo']));
+        $this->assertFalse($this->enumerator->isIndexed(['a' => 'baa', 'foo']));
+    }
+
+    public function testPrepend()
+    {
+        $array = $this->enumerator->prepend(['one', 'two', 'three', 'four'], 'zero');
+        $this->assertEquals(['zero', 'one', 'two', 'three', 'four'], $array);
+
+        $array = $this->enumerator->prepend(['one' => 1, 'two' => 2], 0, 'zero');
+        $this->assertEquals(['zero' => 0, 'one' => 1, 'two' => 2], $array);
+    }
 }

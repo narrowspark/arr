@@ -121,6 +121,10 @@ class Transform
             $index      = $combinator->key();
 
             if ($overwrite || !isset($combined[$index])) {
+                if (defined('HHVM_VERSION')) {
+                    $combinator->next();
+                }
+
                 $combined[$index] = $combinator->current();
             }
         }
@@ -166,7 +170,7 @@ class Transform
     /**
      * Stripe all empty items.
      *
-     * @param array $source
+     * @param array $array
      *
      * @return array
      */
@@ -188,7 +192,7 @@ class Transform
     /**
      * Remove all instances of $ignore found in $elements (=== is used).
      *
-     * @param array $elements
+     * @param array $array
      * @param array $ignore
      *
      * @return array
@@ -609,7 +613,7 @@ class Transform
      * @param array &$newArray
      * @param array $stack
      *
-     * @return array
+     * @return string[]|null
      */
     private function recurseCollapse(array $subject, array &$newArray, $stack = [])
     {

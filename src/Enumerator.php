@@ -83,7 +83,7 @@ class Enumerator
      */
     public function isIndexed(array $array)
     {
-        if ($array == []) {
+        if ($array === []) {
             return true;
         }
 
