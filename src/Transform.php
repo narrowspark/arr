@@ -1,10 +1,6 @@
 <?php
 namespace Narrowspark\Arr;
 
-use Closure;
-use Narrowspark\Arr\Traits\SplitPathTrait;
-use Narrowspark\Arr\Traits\ValueTrait;
-
 class Transform
 {
     /**
