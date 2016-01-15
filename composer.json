@@ -30,7 +30,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Narrowspark\\Arr\\"          : "src/"
+            "Narrowspark\\Arr\\"          : "src/Arr/"
         }
     },
     "autoload-dev": {
