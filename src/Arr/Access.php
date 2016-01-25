@@ -9,7 +9,6 @@ class Access
 
     /**
      * Set an array item to a given value using "dot" notation.
-     *
      * If no key is given to the method, the entire array will be replaced.
      *
      * @param array  $array
@@ -47,6 +46,7 @@ class Access
 
     /**
      * Get an item from an array using "dot" notation.
+     * If key dont exist, you get a default value back.
      *
      * @param array                  $array
      * @param string[]|callable|null $key
@@ -156,7 +156,7 @@ class Access
     }
 
     /**
-     * Remove one or many array items from a given array using "dot" or "wildcards" notation.
+     * Remove one or many array items from a given array using "dot" notation.
      *
      * @param array        $array
      * @param array|string $keys
