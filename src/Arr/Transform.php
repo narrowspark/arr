@@ -1,10 +1,6 @@
 <?php
 namespace Narrowspark\Arr;
 
-use Closure;
-use Narrowspark\Arr\Traits\SplitPathTrait;
-use Narrowspark\Arr\Traits\ValueTrait;
-
 class Transform
 {
     /**
@@ -252,7 +248,11 @@ class Transform
 
             foreach ($next as $key => $value) {
                 if (is_int($key)) {
-                    $array[] = $value;
+                    if (isset($array[$key])) {
+                        $array[] = $value;
+                    } else {
+                        $array[$key] = $value;
+                    }
                 } elseif (is_array($value) && isset($array[$key]) && is_array($array[$key])) {
                     $array[$key] = $this->merge($array[$key], $value);
                 } else {

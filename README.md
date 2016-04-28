@@ -101,35 +101,58 @@ StaticArr::set(['foo' => bar], 'arr', 'narrowspark');
 ```
 
 ## Instance Methods
-### Access
-#### set
-``` php
 
+### Access
+
+#### set
+
+Set an array item to a given value using "dot" notation. If no key is given to the method, the entire array will be replaced.
+``` php
+    $arr = StaticArr::set(['foo' => 'bar'], 'arr', 'narrowspark'); // ['foo' => 'bar', 'arr' => 'narrowspark']
 ```
 
 #### get
-``` php
 
+Get an item from an array using "dot" notation. If key dont exist, you get a default value back.
+
+``` php
+    $arr = StaticArr::get(['foo' => 'bar'], 'foo', 'narrowspark'); // bar
 ```
 
 #### add
-``` php
 
+Add an element to the array at a specific location using the "dot" notation.
+
+``` php
+    $arr = StaticArr::add(['foo' => 'bar'], 'foo', 'narrowspark'); // ['foo' => ['bar', 'narrowspark']]
 ```
 
 #### has
-``` php
 
+Check if an item exists in an array using "dot" notation.
+
+``` php
+    $arr = StaticArr::has(['foo' => 'bar'], 'foo'); // true
 ```
 
 #### update
-``` php
 
+Updates data at the given path.
+
+``` php
+    $increment = function ($value) {
+        return $value + 1;
+    };
+
+    $arr = StaticArr::update(['foo' => 1], $increment); // ['foo' => 2]
 ```
 
 #### forget
-``` php
 
+Remove one or many array items from a given array using "dot" notation.
+
+``` php
+    $arr = StaticArr::forget(['foo' => 'bar'], 'foo'); // []
 ```
 
 ### Enumerator
