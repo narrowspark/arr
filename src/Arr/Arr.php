@@ -40,7 +40,7 @@ class Arr
     {
         $this->getMethodArgs();
 
-        if (!isset($this->methodArgs[$name])) {
+        if (! isset($this->methodArgs[$name])) {
             throw new BadMethodCallException(sprintf('%s is not a valid method.', $name));
         }
 
@@ -67,7 +67,7 @@ class Arr
      */
     protected function getMethodArgs()
     {
-        if (!$this->methodArgs) {
+        if (! $this->methodArgs) {
             foreach ($this->classes as $classInterface) {
                 $class = new ReflectionClass($classInterface);
                 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);

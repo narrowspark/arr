@@ -16,7 +16,7 @@ class Enumerator
      */
     public function random(array $array)
     {
-        if (!count($array)) {
+        if (! count($array)) {
             return;
         }
 
@@ -87,7 +87,7 @@ class Enumerator
             return true;
         }
 
-        return !$this->isAssoc($array);
+        return ! $this->isAssoc($array);
     }
 
     /**

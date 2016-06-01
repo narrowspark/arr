@@ -364,7 +364,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     public function testReindex()
     {
         $array = ['foo' => 'bar'];
-        $map   = ['foo' => 'baz'];
+        $map = ['foo' => 'baz'];
 
         $expected = [
             'foo' => 'bar',

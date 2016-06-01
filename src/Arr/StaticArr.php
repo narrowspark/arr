@@ -1,8 +1,6 @@
 <?php
 namespace Narrowspark\Arr;
 
-use BadMethodCallException;
-
 class StaticArr
 {
     /**

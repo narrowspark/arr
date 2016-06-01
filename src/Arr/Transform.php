@@ -26,7 +26,7 @@ class Transform
 
     public function __construct()
     {
-        $this->access     = new Access();
+        $this->access = new Access();
         $this->enumerator = new Enumerator();
     }
 
@@ -43,14 +43,14 @@ class Transform
         $keys = explode('.', $key);
 
         foreach ($keys as $key) {
-            if (!isset($array[$key])) {
+            if (! isset($array[$key])) {
                 return;
             }
 
             $array = $array[$key];
         }
 
-        if (!is_array($array)) {
+        if (! is_array($array)) {
             return;
         }
 
@@ -93,7 +93,7 @@ class Transform
                 $new[] = $item;
             }
 
-            $position++;
+            ++$position;
         }
 
         return $new;
@@ -119,9 +119,9 @@ class Transform
                 $combinator->next();
             }
 
-            $index      = $combinator->key();
+            $index = $combinator->key();
 
-            if ($overwrite || !isset($combined[$index])) {
+            if ($overwrite || ! isset($combined[$index])) {
                 $combined[$index] = $combinator->current();
             }
         }
@@ -178,7 +178,7 @@ class Transform
                 return false;
             }
 
-            if (!trim($item)) {
+            if (! trim($item)) {
                 return false;
             }
 
@@ -240,10 +240,10 @@ class Transform
      */
     public function merge(array $arrays)
     {
-        $args  = func_get_args();
+        $args = func_get_args();
         $array = array_shift($args);
 
-        while (!empty($args)) {
+        while (! empty($args)) {
             $next = array_shift($args);
 
             foreach ($next as $key => $value) {
@@ -275,7 +275,7 @@ class Transform
 
         foreach ($array as $key => $value) {
             if (is_numeric($key)) {
-                $key   = $value;
+                $key = $value;
                 $value = $default;
             }
 
@@ -322,12 +322,12 @@ class Transform
         $hierarchy = [];
 
         foreach ($array as $key => $value) {
-            $segments     = explode('.', $key);
+            $segments = explode('.', $key);
             $valueSegment = array_pop($segments);
-            $branch       = &$hierarchy;
+            $branch = &$hierarchy;
 
             foreach ($segments as $segment) {
-                if (!isset($branch[$segment])) {
+                if (! isset($branch[$segment])) {
                     $branch[$segment] = [];
                 }
 
@@ -361,7 +361,7 @@ class Transform
             function ($buckets, $value) use ($callback) {
                 $key = call_user_func($callback, $value);
 
-                if (!array_key_exists($key, $buckets)) {
+                if (! array_key_exists($key, $buckets)) {
                     $buckets[$key] = [];
                 }
 
@@ -495,7 +495,7 @@ class Transform
      */
     public function extendDistinct(array $arrays)
     {
-        $merged     = [];
+        $merged = [];
 
         foreach (func_get_args() as $array) {
             foreach ($array as $key => $value) {
@@ -620,7 +620,7 @@ class Transform
             if (is_array($value)) {
                 $this->recurseCollapse($value, $newArray, $fstack);
             } else {
-                $top       = array_shift($fstack);
+                $top = array_shift($fstack);
                 $arrayPart = count($fstack) ? '.' . implode('.', $fstack) : '';
                 $newArray[$top . $arrayPart] = $value;
             }

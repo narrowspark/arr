@@ -63,7 +63,7 @@ class Traverse
     public function all(array $array, callable $predicate)
     {
         foreach ($array as $key => $value) {
-            if (!call_user_func($predicate, $value, $key, $array)) {
+            if (! call_user_func($predicate, $value, $key, $array)) {
                 return false;
             }
         }
@@ -82,7 +82,7 @@ class Traverse
     public function reject(array $array, callable $callback)
     {
         return $this->filter($array, function ($value, $key) use ($callback) {
-            return !call_user_func($callback, $value, $key);
+            return ! call_user_func($callback, $value, $key);
         });
     }
 

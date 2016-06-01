@@ -23,7 +23,7 @@ class Access
             return $value;
         }
 
-        $keys    = explode('.', $key);
+        $keys = explode('.', $key);
         $current = &$array;
 
         while (count($keys) > 1) {
@@ -32,7 +32,7 @@ class Access
             // If the key doesn't exist at this depth, we will just create an empty array
             // to hold the next value, allowing us to create the arrays to hold final
             // values at the correct depth. Then we'll keep digging into the array.
-            if (!isset($current[$key]) || !is_array($current[$key])) {
+            if (! isset($current[$key]) || ! is_array($current[$key])) {
                 $current[$key] = [];
             }
 
@@ -65,7 +65,7 @@ class Access
         }
 
         foreach (explode('.', $key) as $segment) {
-            if (!array_key_exists($segment, $array)) {
+            if (! array_key_exists($segment, $array)) {
                 return $this->value($default);
             }
 
@@ -89,7 +89,7 @@ class Access
     {
         $target = $this->get($array, $key, []);
 
-        if (!is_array($target)) {
+        if (! is_array($target)) {
             $target = [$target];
         }
 
@@ -118,7 +118,7 @@ class Access
         }
 
         foreach (explode('.', $key) as $segment) {
-            if (!is_array($array) || !array_key_exists($segment, $array)) {
+            if (! is_array($array) || ! array_key_exists($segment, $array)) {
                 return false;
             }
 
@@ -139,11 +139,11 @@ class Access
      */
     public function update(array $array, $key, callable $callback)
     {
-        $keys    = explode('.', $key);
+        $keys = explode('.', $key);
         $current = &$array;
 
         foreach ($keys as $key) {
-            if (!isset($current[$key])) {
+            if (! isset($current[$key])) {
                 return $array;
             }
 
@@ -164,7 +164,7 @@ class Access
     public function forget(array $array, $keys)
     {
         $original = &$array;
-        $keys     = (array) $keys;
+        $keys = (array) $keys;
 
         if (count($keys) === 0) {
             return $original;
