@@ -90,13 +90,13 @@ class TraverseTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(
             $this->traverse->all([2, 4, 6], function ($n) {
-               return $n % 2 === 0;
+                return $n % 2 === 0;
             })
         );
 
         $this->assertFalse(
             $this->traverse->all([2, 4, 5], function ($n) {
-               return $n % 2 === 0;
+                return $n % 2 === 0;
             })
         );
     }
