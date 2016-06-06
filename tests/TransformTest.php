@@ -204,7 +204,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             [
                 ['foo' => ['bar' => 'baz', 'bar1' => 'baz1'], 'foo2' => 'bar2'],
                 ['foo.bar' => 'baz', 'foo.bar1' => 'baz1', 'foo2' => 'bar2'],
-                false
+                false,
             ],
         ];
     }

@@ -402,7 +402,7 @@ class Transform
         return $this->dotted[$cache] = $results;
     }
 
-         /**
+    /**
      * Expand a dotted array. Acts the opposite way of Arr::dot().
      *
      * @param array $array
