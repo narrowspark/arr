@@ -402,6 +402,37 @@ class Transform
         return $this->dotted[$cache] = $results;
     }
 
+         /**
+     * Expand a dotted array. Acts the opposite way of Arr::dot().
+     *
+     * @param array $array
+     * @param bool  $recursively
+     *
+     * @return array
+     */
+    public static function unDot($array, $recursively = true)
+    {
+        $results = [];
+
+        foreach ($array as $key => $value) {
+            if (count($dottedKeys = explode('.', $key, 2)) > 1) {
+                $results[$dottedKeys[0]][$dottedKeys[1]] = $value;
+            } else {
+                $results[$key] = $value;
+            }
+        }
+
+        if ($recursively) {
+            foreach ($results as $key => $value) {
+                if (is_array($value) && ! empty($value)) {
+                    $results[$key] = self::unDot($value, $recursively);
+                }
+            }
+        }
+
+        return $results;
+    }
+
     /**
      * Flatten a nested array to a separated key.
      *

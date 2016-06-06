@@ -187,6 +187,28 @@ class TransformTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @dataProvider unDotProvider
+     */
+    public function testUnDot($expected, $array, $recursively)
+    {
+        $this->assertEquals($expected, $this->transform->unDot($array));
+    }
+
+    public function unDotProvider()
+    {
+        return [
+            [[], [], false],
+            [['foo' => ['bar' => 'baz']], ['foo.bar' => 'baz'], false],
+            [['foo' => ['bar' => ['baz' => 'biz']]], ['foo.bar.baz' => 'biz'], false],
+            [
+                ['foo' => ['bar' => 'baz', 'bar1' => 'baz1'], 'foo2' => 'bar2'],
+                ['foo.bar' => 'baz', 'foo.bar1' => 'baz1', 'foo2' => 'bar2'],
+                false
+            ],
+        ];
+    }
+
     public function testDotCache()
     {
         $this->assertEquals(['foo' => 'bar'], $this->transform->dot(['foo' => 'bar'], ''));
