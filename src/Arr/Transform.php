@@ -411,11 +411,11 @@ class Transform
      * Expand a dotted array. Acts the opposite way of Arr::dot().
      *
      * @param array $array
-     * @param bool  $recursively
+     * @param bool  $depth
      *
      * @return array
      */
-    public static function unDot($array, $recursively = true)
+    public function unDot($array, $depth = INF)
     {
         $results = [];
 
@@ -427,11 +427,9 @@ class Transform
             }
         }
 
-        if ($recursively) {
-            foreach ($results as $key => $value) {
-                if (is_array($value) && ! empty($value)) {
-                    $results[$key] = self::unDot($value, $recursively);
-                }
+        foreach ($results as $key => $value) {
+            if (is_array($value) && ! empty($value) && $depth > 1) {
+                $results[$key] = $this->unDot($value, $depth - 1);
             }
         }
 

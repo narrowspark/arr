@@ -190,7 +190,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider unDotProvider
      */
-    public function testUnDot($expected, $array, $recursively)
+    public function testUnDot($expected, $array, $depth)
     {
         $this->assertEquals($expected, $this->transform->unDot($array));
     }
@@ -206,6 +206,26 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 ['foo.bar' => 'baz', 'foo.bar1' => 'baz1', 'foo2' => 'bar2'],
                 false,
             ],
+        ];
+    }
+
+    /**
+     * @dataProvider UnDotWithDepthProvider
+     */
+    public function testUnDotWithDepth($expected, $array, $depth)
+    {
+        $this->assertEquals($expected, $this->transform->unDot($array, $depth));
+    }
+
+    public function UnDotWithDepthProvider()
+    {
+        return [
+            [['foo' => ['bar' => ['baz' => 'baz-value']]], ['foo.bar.baz' => 'baz-value'], INF],
+            [['foo' => ['bar.baz.bizz' => 'baz-value']], ['foo.bar.baz.bizz' => 'baz-value'], 1],
+            [['foo' => ['bar' => ['baz.bizz' => 'baz-value']]], ['foo.bar.baz.bizz' => 'baz-value'], 2],
+            [['foo' => ['bar' => ['baz' => ['bizz' => 'baz-value']]]], ['foo.bar.baz.bizz' => 'baz-value'], 3],
+            [['foo' => ['bar' => 'baz', 'bar1' => ['bizz' => 'baz1']], 'foo2' => 'bar2'], ['foo.bar' => 'baz', 'foo.bar1.bizz' => 'baz1', 'foo2' => 'bar2'], 2],
+            [['foo' => ['bar' => 'baz', 'bar1.bizz' => 'baz1'], 'foo2' => 'bar2'], ['foo.bar' => 'baz', 'foo.bar1.bizz' => 'baz1', 'foo2' => 'bar2'], 1],
         ];
     }
 
