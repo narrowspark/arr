@@ -4,7 +4,6 @@ namespace Narrowspark\Arr;
 use BadMethodCallException;
 use ReflectionClass;
 use ReflectionMethod;
-use RuntimeException;
 
 class Arr
 {
@@ -32,7 +31,6 @@ class Arr
      * @param mixed[] $args
      *
      * @throws \BadMethodCallException
-     * @throws \RuntimeException
      *
      * @return mixed
      */
