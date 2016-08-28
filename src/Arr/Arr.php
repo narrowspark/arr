@@ -44,17 +44,6 @@ class Arr
             throw new BadMethodCallException(sprintf('%s is not a valid method.', $name));
         }
 
-        // if (count($args) < 2) {
-        //     throw new RuntimeException(
-        //         sprintf(
-        //             '%s counted arguments dont match needed arguments %s for function %s.',
-        //             count($args),
-        //             yy
-        //             $name
-        //         )
-        //     );
-        // }
-
         foreach ($this->classes as $class) {
             if (method_exists($class, $name)) {
                 return call_user_func_array([new $class(), $name], $args);

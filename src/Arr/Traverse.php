@@ -118,6 +118,10 @@ class Traverse
      */
     public function first(array $array, callable $callback, $default = null)
     {
+        if (is_null($callback)) {
+            return empty($array) ? $this->value($default) : reset($array);
+        }
+
         foreach ($array as $key => $value) {
             if (call_user_func($callback, $key, $value)) {
                 return $value;
@@ -138,6 +142,10 @@ class Traverse
      */
     public function last(array $array, callable $callback, $default = null)
     {
+        if (is_null($callback)) {
+            return empty($array) ? $this->value($default) : end($array);
+        }
+
         return $this->first(array_reverse($array), $callback, $default);
     }
 }
