@@ -119,7 +119,13 @@ class Traverse
     public function first(array $array, callable $callback, $default = null)
     {
         if (is_null($callback)) {
-            return empty($array) ? $this->value($default) : reset($array);
+            if (empty($array)) {
+                return value($default);
+            }
+
+            foreach ($array as $item) {
+                return $item;
+            }
         }
 
         foreach ($array as $key => $value) {
