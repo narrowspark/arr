@@ -4,7 +4,6 @@ namespace Narrowspark\Arr;
 use BadMethodCallException;
 use ReflectionClass;
 use ReflectionMethod;
-use RuntimeException;
 
 class Arr
 {
@@ -32,7 +31,6 @@ class Arr
      * @param mixed[] $args
      *
      * @throws \BadMethodCallException
-     * @throws \RuntimeException
      *
      * @return mixed
      */
@@ -43,17 +41,6 @@ class Arr
         if (! isset($this->methodArgs[$name])) {
             throw new BadMethodCallException(sprintf('%s is not a valid method.', $name));
         }
-
-        // if (count($args) < 2) {
-        //     throw new RuntimeException(
-        //         sprintf(
-        //             '%s counted arguments dont match needed arguments %s for function %s.',
-        //             count($args),
-        //             yy
-        //             $name
-        //         )
-        //     );
-        // }
 
         foreach ($this->classes as $class) {
             if (method_exists($class, $name)) {

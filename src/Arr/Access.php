@@ -100,6 +100,25 @@ class Access
     }
 
     /**
+     * Check if any item or items exist in an array using "dot" notation.
+     *
+     * @param array        $array
+     * @param string|array $keys
+     *
+     * @return bool
+     */
+    public function any(array $array, $keys)
+    {
+        foreach ((array) $keys as $key) {
+            if ($this->has($array, $key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Check if an item exists in an array using "dot" notation.
      *
      * @param array  $array
