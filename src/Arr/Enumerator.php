@@ -124,7 +124,8 @@ class Enumerator
         $closest = $array[0];
 
         for ($i = 1, $j = count($array), $k = 0; $i < $j; $i++, $k++) {
-            $middleValue = ((int) $array[$i] - (int) $array[$k]) / 2 + (int) $array[$k];
+            $middleValue = ((int) $array[$i] - (int) $array[$k]);
+            $middleValue = $middleValue / 2 + (int) $array[$k];
 
             if ($value >= $middleValue) {
                 $closest = $array[$i];
