@@ -156,33 +156,60 @@ class Arr
     }
 
     /**
-     * Check if an item exists in an array using "dot" notation.
+     * Determine if the given key exists in the provided array.
      *
      * @param \ArrayAccess|array $array
      * @param string|int         $key
      *
      * @return bool
      */
-    public static function has($array, $key): bool
+    public static function exists($array, $key): bool
     {
         if ($array instanceof ArrayAccess) {
             return $array->offsetExists($key);
         }
 
-        if (empty($array) || is_null($key)) {
+        return array_key_exists($key, $array);
+    }
+
+    /**
+     * Check if an item exists in an array using "dot" notation.
+     *
+     * @param \ArrayAccess|array $array
+     * @param string|int         $keys
+     *
+     * @return bool
+     */
+    public static function has($array, $keys): bool
+    {
+        if (is_null($keys)) {
             return false;
         }
 
-        if (array_key_exists($key, $array)) {
-            return true;
+        $keys = (array) $keys;
+
+        if (! $array) {
+            return false;
         }
 
-        foreach (explode('.', $key) as $segment) {
-            if (! is_array($array) || ! array_key_exists($segment, $array)) {
-                return false;
+        if ($keys === []) {
+            return false;
+        }
+
+        foreach ($keys as $key) {
+            $subKeyArray = $array;
+
+            if (static::exists($array, $key)) {
+                continue;
             }
 
-            $array = $array[$segment];
+            foreach (explode('.', (string) $key) as $segment) {
+                if (static::accessible($subKeyArray) && static::exists($subKeyArray, $segment)) {
+                    $subKeyArray = $subKeyArray[$segment];
+                } else {
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -232,7 +259,7 @@ class Arr
 
         foreach ($keys as $key) {
             // if the exact key exists in the top-level, remove it
-            if (static::has($array, $key)) {
+            if (static::exists($array, $key)) {
                 unset($array[$key]);
                 continue;
             }
@@ -318,7 +345,7 @@ class Arr
 
         $splitSize = ceil(count($array) / $numberOfPieces);
 
-        return array_chunk($array, $splitSize, $preserveKeys);
+        return array_chunk($array, (int) $splitSize, $preserveKeys);
     }
 
     /**
@@ -412,12 +439,12 @@ class Arr
      * Swap two elements between positions.
      *
      * @param array  $array array to swap
-     * @param string $swapA
-     * @param string $swapB
+     * @param string<int $swapA
+     * @param string<int $swapB
      *
      * @return array|null
      */
-    public static function swap(array $array, string $swapA, string $swapB)
+    public static function swap(array $array, $swapA, $swapB)
     {
         list($array[$swapA], $array[$swapB]) = [$array[$swapB], $array[$swapA]];
 
@@ -800,7 +827,7 @@ class Arr
      *
      * @return array
      */
-    public static function flatten(array $array, $separator = null, $prepend = '')
+    public static function flatten(array $array, string $separator = null, string $prepend = ''): array
     {
         $flattened = [];
 
@@ -882,7 +909,7 @@ class Arr
      *
      * @return array
      */
-    public static function extendDistinct(array $arrays)
+    public static function extendDistinct(...$arrays)
     {
         $merged = [];
 
