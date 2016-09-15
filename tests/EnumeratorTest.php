@@ -1,17 +1,10 @@
 <?php
 namespace Narrowspark\Arr\Tests;
 
-use Narrowspark\Arr\Enumerator;
+use Narrowspark\Arr\Arr;
 
 class EnumeratorTest extends \PHPUnit_Framework_TestCase
 {
-    protected $enumerator;
-
-    public function setUp()
-    {
-        $this->enumerator = new Enumerator();
-    }
-
     /**
      * @dataProvider splitProvider
      */
@@ -19,7 +12,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             $expectedArray,
-            $this->enumerator->split($array, $splitIntoNumber, $preserveKeys)
+            Arr::split($array, $splitIntoNumber, $preserveKeys)
         );
     }
 
@@ -50,14 +43,14 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     public function testOnly()
     {
         $array = ['name' => 'Desk', 'price' => 100, 'orders' => 10];
-        $array = $this->enumerator->only($array, ['name', 'price']);
+        $array = Arr::only($array, ['name', 'price']);
 
         $this->assertEquals(['name' => 'Desk', 'price' => 100], $array);
     }
 
     public function testRandom()
     {
-        $this->assertNull($this->enumerator->random([]));
+        $this->assertNull(Arr::random([]));
 
         $testArray = [
             'one'   => 'a',
@@ -66,7 +59,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         ];
 
         $testArrayValues = array_values($testArray);
-        $randomArrayValue = $this->enumerator->random($testArray);
+        $randomArrayValue = Arr::random($testArray);
 
         $this->assertTrue(in_array($randomArrayValue, $testArrayValues));
     }
@@ -76,7 +69,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsAssociative($expected, $array)
     {
-        $this->assertEquals($expected, $this->enumerator->isAssoc($array));
+        $this->assertEquals($expected, Arr::isAssoc($array));
     }
 
     public function isAssociativeProvider()
@@ -95,7 +88,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
      */
     public function isIndexed($expected, $array)
     {
-        $this->assertEquals($expected, $this->enumerator->isIndexed($array));
+        $this->assertEquals($expected, Arr::isIndexed($array));
     }
 
     public function isIndexProvider()
@@ -111,17 +104,17 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
 
     public function testIsIndexed()
     {
-        $this->assertTrue($this->enumerator->isIndexed([]));
-        $this->assertTrue($this->enumerator->isIndexed(['baa', 'foo']));
-        $this->assertFalse($this->enumerator->isIndexed(['a' => 'baa', 'foo']));
+        $this->assertTrue(Arr::isIndexed([]));
+        $this->assertTrue(Arr::isIndexed(['baa', 'foo']));
+        $this->assertFalse(Arr::isIndexed(['a' => 'baa', 'foo']));
     }
 
     public function testPrepend()
     {
-        $array = $this->enumerator->prepend(['one', 'two', 'three', 'four'], 'zero');
+        $array = Arr::prepend(['one', 'two', 'three', 'four'], 'zero');
         $this->assertEquals(['zero', 'one', 'two', 'three', 'four'], $array);
 
-        $array = $this->enumerator->prepend(['one' => 1, 'two' => 2], 0, 'zero');
+        $array = Arr::prepend(['one' => 1, 'two' => 2], 0, 'zero');
         $this->assertEquals(['zero' => 0, 'one' => 1, 'two' => 2], $array);
     }
 
@@ -129,6 +122,6 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     {
         $array = ['foobartest', 'bar', 'foo'];
 
-        $this->assertEquals('foobartest', $this->enumerator->closest($array, 'test'));
+        $this->assertEquals('foobartest', Arr::closest($array, 'test'));
     }
 }

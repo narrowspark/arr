@@ -1,23 +1,16 @@
 <?php
 namespace Narrowspark\Arr\Tests;
 
-use Narrowspark\Arr\Transform;
+use Narrowspark\Arr\Arr;
 
 class TransformTest extends \PHPUnit_Framework_TestCase
 {
-    protected $transform;
-
-    public function setUp()
-    {
-        $this->transform = new Transform();
-    }
-
     /**
      * @dataProvider extendProvider
      */
     public function testExtend($expected, $array1, $array2)
     {
-        $this->assertEquals($expected, $this->transform->extend($array1, $array2));
+        $this->assertEquals($expected, Arr::extend($array1, $array2));
     }
 
     public function extendProvider()
@@ -46,7 +39,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testReset($expected, $array, $deep)
     {
-        $this->assertEquals($expected, $this->transform->reset($array, $deep), $deep);
+        $this->assertEquals($expected, Arr::reset($array, $deep), $deep);
     }
 
     public function resetProvider()
@@ -81,10 +74,10 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             3 => 'f',
         ];
 
-        $this->assertEquals(['a', 'e'], $this->transform->every($array, 4));
-        $this->assertEquals(['b', 'f'], $this->transform->every($array, 4, 1));
-        $this->assertEquals(['c'], $this->transform->every($array, 4, 2));
-        $this->assertEquals(['d'], $this->transform->every($array, 4, 3));
+        $this->assertEquals(['a', 'e'], Arr::every($array, 4));
+        $this->assertEquals(['b', 'f'], Arr::every($array, 4, 1));
+        $this->assertEquals(['c'], Arr::every($array, 4, 2));
+        $this->assertEquals(['d'], Arr::every($array, 4, 3));
     }
 
     /**
@@ -92,7 +85,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testExpand($expected, $array, $prepend)
     {
-        $this->assertEquals($expected, $this->transform->expand($array, $prepend));
+        $this->assertEquals($expected, Arr::expand($array, $prepend));
     }
 
     public function expandProvider()
@@ -109,7 +102,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtendDistinct($expected, $array1, $array2)
     {
-        $this->assertEquals($expected, $this->transform->extendDistinct($array1, $array2));
+        $this->assertEquals($expected, Arr::extendDistinct($array1, $array2));
     }
 
     public function extendDistinctProvider()
@@ -142,10 +135,10 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             ['foo' => 'boz', 'biz' => 'bar'],
-            $this->transform->swap(['foo' => 'bar', 'biz' => 'boz'], 'foo', 'biz')
+            Arr::swap(['foo' => 'bar', 'biz' => 'boz'], 'foo', 'biz')
         );
 
-        $this->assertEquals(['boz', 'bar'], $this->transform->swap(['bar', 'boz'], 0, 1));
+        $this->assertEquals(['boz', 'bar'], Arr::swap(['bar', 'boz'], 0, 1));
     }
 
     public function testAsHierarchy()
@@ -161,7 +154,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 ],
                 'answer' => 42,
             ],
-            $this->transform->asHierarchy([
+            Arr::asHierarchy([
                 'key.sub1' => 'value1',
                 'key.sub2' => 'value2',
                 'key.sub3.sub4' => 'value3',
@@ -175,7 +168,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testDot($expected, $array, $prepend)
     {
-        $this->assertEquals($expected, $this->transform->dot($array));
+        $this->assertEquals($expected, Arr::dot($array));
     }
 
     public function dotProvider()
@@ -192,7 +185,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnDot($expected, $array, $depth)
     {
-        $this->assertEquals($expected, $this->transform->unDot($array));
+        $this->assertEquals($expected, Arr::unDot($array));
     }
 
     public function unDotProvider()
@@ -214,7 +207,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnDotWithDepth($expected, $array, $depth)
     {
-        $this->assertEquals($expected, $this->transform->unDot($array, $depth));
+        $this->assertEquals($expected, Arr::unDot($array, $depth));
     }
 
     public function UnDotWithDepthProvider()
@@ -231,8 +224,8 @@ class TransformTest extends \PHPUnit_Framework_TestCase
 
     public function testDotCache()
     {
-        $this->assertEquals(['foo' => 'bar'], $this->transform->dot(['foo' => 'bar'], ''));
-        $this->assertEquals(['foo' => 'bar'], $this->transform->dot(['foo' => 'bar'], ''));
+        $this->assertEquals(['foo' => 'bar'], Arr::dot(['foo' => 'bar'], ''));
+        $this->assertEquals(['foo' => 'bar'], Arr::dot(['foo' => 'bar'], ''));
     }
 
     public function testGroupBy()
@@ -244,7 +237,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 3 => [3, 3],
                 4 => [4],
             ],
-            $this->transform->groupBy([1, 2, 2, 3, 3, 4])
+            Arr::groupBy([1, 2, 2, 3, 3, 4])
         );
 
         $this->assertSame(
@@ -252,7 +245,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 1 => [1, 3, 5],
                 0 => [2, 4, 6],
             ],
-            $this->transform->groupBy(
+            Arr::groupBy(
                 [1, 2, 3, 4, 5, 6],
                 function ($n) {
                     return $n % 2;
@@ -265,17 +258,17 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             [1, 2, 3, 4, 5],
-            $this->transform->flatten([1, [2, [3, [4, 5]]]])
+            Arr::flatten([1, [2, [3, [4, 5]]]])
         );
 
         $this->assertSame(
             [0 => 'a', '1-0' => 'b', '1-1-0' => 'c', '1-1-1-0' => 'd', '1-1-1-1' => 'e'],
-            $this->transform->flatten(['a', ['b', ['c', ['d', 'e']]]], '-')
+            Arr::flatten(['a', ['b', ['c', ['d', 'e']]]], '-')
         );
 
         $this->assertSame(
             ['_0' => 'a', '_1-0' => 'b', '_1-1-0' => 'c', '_1-1-1-0' => 'd', '_1-1-1-1' => 'e'],
-            $this->transform->flatten(['a', ['b', ['c', ['d', 'e']]]], '-', '_')
+            Arr::flatten(['a', ['b', ['c', ['d', 'e']]]], '-', '_')
         );
     }
 
@@ -334,7 +327,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $this->transform->sortRecursive($array));
+        $this->assertEquals($expect, Arr::sortRecursive($array));
     }
 
     /**
@@ -342,7 +335,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
      */
     public function testZip($expected, $array, $array2, $array3)
     {
-        $this->assertEquals($expected, $this->transform->zip($array, $array2, $array3));
+        $this->assertEquals($expected, Arr::zip($array, $array2, $array3));
     }
 
     public function zipProvider()
@@ -357,17 +350,17 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'banana',
-            $this->transform->pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'orange')
+            Arr::pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'orange')
         );
 
         $this->assertEquals(
             null,
-            $this->transform->pop(['orange' => 'banana'], 'orange')
+            Arr::pop(['orange' => 'banana'], 'orange')
         );
 
         $this->assertEquals(
             null,
-            $this->transform->pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'dont')
+            Arr::pop(['orange' => ['banana'], 'apple' => 'raspberry'], 'dont')
         );
     }
 
@@ -378,7 +371,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $expected,
-            $this->transform->merge($array, $array2)
+            Arr::merge($array, $array2)
         );
     }
 
@@ -420,13 +413,13 @@ class TransformTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $expected,
-            $this->transform->reindex($array, $map)
+            Arr::reindex($array, $map)
         );
 
         $expected = ['baz' => 'bar'];
         $this->assertEquals(
             $expected,
-            $this->transform->reindex($array, $map, false)
+            Arr::reindex($array, $map, false)
         );
     }
 
@@ -446,7 +439,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 'two' => 'three',
                 'four' => $default,
             ],
-            $this->transform->normalize($array, $default)
+            Arr::normalize($array, $default)
         );
     }
 
@@ -468,7 +461,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 'a' => 1,
                 'b' => 3,
             ],
-            $this->transform->combine($users, $closure)
+            Arr::combine($users, $closure)
         );
 
         // not overwriting existing names
@@ -477,7 +470,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 'a' => 1,
                 'b' => 2,
             ],
-            $this->transform->combine($users, $closure, false)
+            Arr::combine($users, $closure, false)
         );
     }
 
@@ -493,7 +486,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 1,
                 4,
             ],
-            $this->transform->without($array, [3])
+            Arr::without($array, [3])
         );
     }
 
@@ -521,7 +514,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 'test.d.1' => 'd1',
                 'top' => 'blah',
             ],
-            $this->transform->collapse($from)
+            Arr::collapse($from)
         );
     }
 
@@ -544,7 +537,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 'textbox.f.g.1' => 'val2',
                 'h.0'           => 'text1',
             ],
-            $this->transform->collapse($from)
+            Arr::collapse($from)
         );
     }
 
@@ -572,7 +565,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $to,
-            $this->transform->expand($this->transform->collapse($from))
+            Arr::expand(Arr::collapse($from))
         );
     }
 
@@ -580,7 +573,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             [['textbox', 'foo'], [['d' => 'text1'], 'bar']],
-            $this->transform->divide([
+            Arr::divide([
                 'textbox' => ['d' => 'text1'],
                 'foo' => 'bar',
             ])
@@ -591,7 +584,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             ['textbox' => 'test', 'foo'],
-            $this->transform->stripEmpty([
+            Arr::stripEmpty([
                 'textbox' => 'test',
                 'foo',
                 'a' => '',
@@ -607,7 +600,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
             ['name' => 'Chair'],
         ];
 
-        $array = array_values($this->transform->sort($array, function ($value) {
+        $array = array_values(Arr::sort($array, function ($value) {
             return $value['name'];
         }));
 
