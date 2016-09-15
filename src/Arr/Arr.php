@@ -438,7 +438,7 @@ class Arr
     /**
      * Swap two elements between positions.
      *
-     * @param array  $array array to swap
+     * @param array      $array array to swap
      * @param string<int $swapA
      * @param string<int $swapB
      *
