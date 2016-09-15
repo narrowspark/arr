@@ -1,6 +1,8 @@
 <?php
 namespace Narrowspark\Arr\Tests;
 
+use Narrowspark\Arr\Arr;
+
 class TraverseTest extends \PHPUnit_Framework_TestCase
 {
     public function testMap()

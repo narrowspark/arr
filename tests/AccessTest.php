@@ -130,7 +130,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
      */
     public function testForget($expected, $array, $key)
     {
-        $this->assertEquals($expected, Arr::forget($array, $key));
+        Arr::forget($array, $key);
+
+        $this->assertEquals($expected, $array);
     }
 
     public function forgetProvider()

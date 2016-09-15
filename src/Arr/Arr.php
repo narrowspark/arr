@@ -1,6 +1,7 @@
 <?php
 namespace Narrowspark\Arr;
 
+use ArrayAccess;
 use Closure;
 
 class Arr
@@ -10,7 +11,19 @@ class Arr
      *
      * @var array
      */
-    protected $dotted = [];
+    protected static $dotted = [];
+
+    /**
+     * Determine whether the given value is array accessible.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    public static function accessible($value)
+    {
+        return is_array($value) || $value instanceof ArrayAccess;
+    }
 
     /**
      * Get a value from the array, and remove it.
@@ -21,7 +34,7 @@ class Arr
      *
      * @return mixed
      */
-    public static function pull(&$array, $key, $default = null)
+    public static function pull(array &$array, string $key, $default = null)
     {
         $value = static::get($array, $key, $default);
 
@@ -34,13 +47,13 @@ class Arr
      * Set an array item to a given value using "dot" notation.
      * If no key is given to the method, the entire array will be replaced.
      *
-     * @param array  $array
-     * @param string $key
-     * @param mixed  $value
+     * @param array       $array
+     * @param string|null $key
+     * @param mixed       $value
      *
      * @return array
      */
-    public static function set(array $array, string $key, $value): array
+    public static function set(array $array, $key, $value): array
     {
         if ($key === null) {
             return $value;
@@ -108,7 +121,7 @@ class Arr
      *
      * @return array
      */
-    public static function add(array $array, $key, $value)
+    public static function add(array $array, $key, $value): array
     {
         $target = static::get($array, $key, []);
 
@@ -130,7 +143,7 @@ class Arr
      *
      * @return bool
      */
-    public static function any(array $array, $keys)
+    public static function any(array $array, $keys): bool
     {
         foreach ((array) $keys as $key) {
             if (static::has($array, $key)) {
@@ -144,13 +157,17 @@ class Arr
     /**
      * Check if an item exists in an array using "dot" notation.
      *
-     * @param array  $array
-     * @param string $key
+     * @param \ArrayAccess|array $array
+     * @param string|int         $key
      *
      * @return bool
      */
-    public static function has(array $array, $key)
+    public static function has($array, $key): bool
     {
+        if ($array instanceof ArrayAccess) {
+            return $array->offsetExists($key);
+        }
+
         if (empty($array) || is_null($key)) {
             return false;
         }
@@ -203,34 +220,37 @@ class Arr
      * @param array        $array
      * @param array|string $keys
      */
-    public static function forget(array $array, $keys)
+    public static function forget(array &$array, $keys)
     {
         $original = &$array;
         $keys = (array) $keys;
 
         if (count($keys) === 0) {
-            return $original;
+            return;
         }
 
         foreach ($keys as $key) {
+            // if the exact key exists in the top-level, remove it
+            if (static::has($array, $key)) {
+                unset($array[$key]);
+                continue;
+            }
+
             $parts = explode('.', $key);
             // clean up before each pass
-            $arr = &$original;
+            $array = &$original;
 
             while (count($parts) > 1) {
                 $part = array_shift($parts);
-
-                if (isset($arr[$part]) && is_array($arr[$part])) {
-                    $arr = &$arr[$part];
+                if (isset($array[$part]) && is_array($array[$part])) {
+                    $array = &$array[$part];
                 } else {
                     continue 2;
                 }
             }
 
-            unset($arr[array_shift($parts)]);
+            unset($array[array_shift($parts)]);
         }
-
-        return $array;
     }
 
     /**
@@ -259,9 +279,9 @@ class Arr
      *
      * @return string[]
      */
-    public static function only(array $array, $keys)
+    public static function only(array $array, array $keys)
     {
-        return array_intersect_key($array, array_flip((array) $keys));
+        return array_intersect_key($array, array_flip($keys));
     }
 
     /**
@@ -271,7 +291,7 @@ class Arr
      *
      * @return bool
      */
-    public static function isAssoc(array $array)
+    public static function isAssoc(array $array): bool
     {
         if ($array === []) {
             return true;
@@ -289,7 +309,7 @@ class Arr
      *
      * @return array
      */
-    public static function split(array $array, $numberOfPieces = 2, $preserveKeys = false)
+    public static function split(array $array, int $numberOfPieces = 2, bool $preserveKeys = false): array
     {
         if (count($array) === 0) {
             return [];
@@ -307,7 +327,7 @@ class Arr
      *
      * @return bool
      */
-    public static function isIndexed(array $array)
+    public static function isIndexed(array $array): bool
     {
         if ($array === []) {
             return true;
@@ -325,7 +345,7 @@ class Arr
      *
      * @return array
      */
-    public static function prepend(array $array, $value, $key = null)
+    public static function prepend(array $array, $value, $key = null): array
     {
         if (is_null($key)) {
             array_unshift($array, $value);
@@ -344,7 +364,7 @@ class Arr
      *
      * @return mixed
      */
-    public static function closest(array $array, $value)
+    public static function closest(array $array, string $value)
     {
         sort($array);
         $closest = $array[0];
@@ -368,7 +388,7 @@ class Arr
      *
      * @return mixed
      */
-    public static function pop(array $array, $key)
+    public static function pop(array $array, string $key)
     {
         $keys = explode('.', $key);
 
@@ -396,7 +416,7 @@ class Arr
      *
      * @return array|null
      */
-    public static function swap(array $array, $swapA, $swapB)
+    public static function swap(array $array, string $swapA, string $swapB)
     {
         list($array[$swapA], $array[$swapB]) = [$array[$swapB], $array[$swapA]];
 
@@ -412,7 +432,7 @@ class Arr
      *
      * @return array
      */
-    public static function every($array, $step, $offset = 0)
+    public static function every(array $array, int $step, int $offset = 0): array
     {
         $new = [];
 
@@ -438,7 +458,7 @@ class Arr
      *
      * @return array Indexed values.
      */
-    public static function combine(array $array, callable $callback, $overwrite = true)
+    public static function combine(array $array, callable $callback, bool $overwrite = true): array
     {
         $combined = [];
 
@@ -461,9 +481,13 @@ class Arr
     }
 
     /**
-     * Collapse a nested array down to an array of flat key=>value pairs
+     * Collapse a nested array down to an array of flat key=>value pairs.
+     *
+     * @param array $array
+     *
+     * @return array
      */
-    public static function collapse(array $array)
+    public static function collapse(array $array): array
     {
         $newArray = [];
 
@@ -488,9 +512,9 @@ class Arr
      *
      * @param array $array
      *
-     * @return array[]
+     * @return array
      */
-    public static function divide($array)
+    public static function divide(array $array): array
     {
         return [array_keys($array), array_values($array)];
     }
@@ -502,7 +526,7 @@ class Arr
      *
      * @return array
      */
-    public static function stripEmpty(array $array)
+    public static function stripEmpty(array $array): array
     {
         return array_filter($array, function ($item) {
             if (is_null($item)) {
@@ -525,7 +549,7 @@ class Arr
      *
      * @return array
      */
-    public static function without(array $array, array $ignore)
+    public static function without(array $array, array $ignore): array
     {
         foreach ($array as $key => $node) {
             if (in_array($node, $ignore, true)) {
@@ -547,7 +571,7 @@ class Arr
      *
      * @return array
      */
-    public static function reindex(array $array, array $map, $unmapped = true)
+    public static function reindex(array $array, array $map, bool $unmapped = true): array
     {
         $reindexed = $unmapped
             ? $array
@@ -569,7 +593,7 @@ class Arr
      *
      * @return array
      */
-    public static function merge(array $arrays)
+    public static function merge(array $arrays): array
     {
         $args = func_get_args();
         $array = array_shift($args);
@@ -604,7 +628,7 @@ class Arr
      *
      *  @return array
      */
-    public static function normalize(array $array, $default)
+    public static function normalize(array $array, $default): array
     {
         $normalized = [];
 
@@ -627,7 +651,7 @@ class Arr
      *
      * @return array
      */
-    public static function extend(array $arrays)
+    public static function extend(array $arrays): array
     {
         $merged = [];
 
@@ -652,7 +676,7 @@ class Arr
      *
      * @return array
      */
-    public static function asHierarchy(array $array)
+    public static function asHierarchy(array $array): array
     {
         $hierarchy = [];
 
@@ -685,7 +709,7 @@ class Arr
      *
      * @return array
      */
-    public static function groupBy(array $array, callable $callback = null)
+    public static function groupBy(array $array, callable $callback = null): array
     {
         $callback = $callback ?: function ($value) {
             return $value;
@@ -716,12 +740,12 @@ class Arr
      *
      * @return array
      */
-    public static function dot($array, $prepend = '')
+    public static function dot(array $array, string $prepend = ''): array
     {
         $cache = serialize(['array' => $array, 'prepend' => $prepend]);
 
-        if (array_key_exists($cache, static::$dotted)) {
-            return static::$dotted[$cache];
+        if (array_key_exists($cache, self::$dotted)) {
+            return self::$dotted[$cache];
         }
 
         $results = [];
@@ -734,18 +758,18 @@ class Arr
             }
         }
 
-        return static::$dotted[$cache] = $results;
+        return self::$dotted[$cache] = $results;
     }
 
     /**
      * Expand a dotted array. Acts the opposite way of Arr::dot().
      *
-     * @param array $array
-     * @param bool  $depth
+     * @param array     $array
+     * @param int|float $depth
      *
      * @return array
      */
-    public static function unDot($array, $depth = INF)
+    public static function unDot(array $array, $depth = INF): array
     {
         $results = [];
 
@@ -798,7 +822,7 @@ class Arr
      *
      * @return array
      */
-    public static function expand(array $array, $prepend = '')
+    public static function expand(array $array, string $prepend = ''): array
     {
         $results = [];
 
@@ -815,7 +839,7 @@ class Arr
                 }
             }
 
-            $results = static::access($results, $key, $value);
+            $results = static::set($results, $key, $value);
         }
 
         return $results;
@@ -888,7 +912,7 @@ class Arr
      *
      * @return array
      */
-    public static function sort(array $array, callable $callback, $options = SORT_REGULAR, $descending = false)
+    public static function sort(array $array, callable $callback, int $options = SORT_REGULAR, bool $descending = false): array
     {
         $results = [];
 
@@ -899,8 +923,7 @@ class Arr
             $results[$key] = $callback($value, $key);
         }
 
-        $descending ? arsort($results, $options)
-                    : asort($results, $options);
+        $descending ? arsort($results, $options) : asort($results, $options);
 
         // Once we have sorted all of the keys in the array, we will loop through them
         // and grab the corresponding model so we can set the underlying items list
@@ -1039,7 +1062,7 @@ class Arr
      *
      *  @return array filtered array.
      */
-    public static function reject(array $array, callable $callback)
+    public static function reject(array $array, callable $callback): array
     {
         return static::filter($array, function ($value, $key) use ($callback) {
             return ! call_user_func($callback, $value, $key);
@@ -1054,7 +1077,7 @@ class Arr
      *
      * @return array
      */
-    public static function where(array $array, callable $callback)
+    public static function where(array $array, callable $callback): array
     {
         $filtered = [];
 
@@ -1136,7 +1159,7 @@ class Arr
      *
      * @return string[]|null
      */
-    private function recurseCollapse(array $subject, array &$newArray, $stack = [])
+    private static function recurseCollapse(array $subject, array &$newArray, $stack = [])
     {
         foreach ($subject as $key => $value) {
             $fstack = array_merge($stack, [$key]);
