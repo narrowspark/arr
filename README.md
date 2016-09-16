@@ -21,12 +21,13 @@ A PHP collection of utilities to manipulate arrays. Compatible with, PHP 7 and P
 * [Why?](#why)
 * [Installation](#installation)
 * [Arr](#arr)
-* [Instance methods](#instance-methods)
     * [Access methods](#access)
         * [set](#set)
         * [get](#get)
         * [add](#add)
         * [has](#has)
+        * [put](#put)
+        * [exists](#exists)
         * [update](#update)
         * [forget](#forget)
     * [Enumerator](#enumerator)
@@ -144,7 +145,11 @@ Updates data at the given path.
 Remove one or many array items from a given array using "dot" notation.
 
 ``` php
-    $arr = Arr::forget(['foo' => 'bar'], 'foo'); // []
+    $arr = ['foo' => 'bar']
+
+    Arr::forget($arr, 'foo');
+
+    $arr; // []
 ```
 
 ## Change log
@@ -158,10 +163,6 @@ From the project directory, tests can be ran using phpunit
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security
-
-If you discover any security related issues, please email d.bannert@anolilab.de instead of using the issue tracker.
 
 ## Credits
 
