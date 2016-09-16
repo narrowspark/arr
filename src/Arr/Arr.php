@@ -60,7 +60,7 @@ class Arr
             return $value;
         }
 
-        $keys = explode('.', $key);
+        $keys = explode('.', (string) $key);
         $current = &$array;
 
         while (count($keys) > 1) {
@@ -101,7 +101,7 @@ class Arr
             return static::value($array[$key]);
         }
 
-        foreach (explode('.', $key) as $segment) {
+        foreach (explode('.', (string) $key) as $segment) {
             if (! array_key_exists($segment, $array)) {
                 return static::value($default);
             }
@@ -218,13 +218,13 @@ class Arr
     /**
      * Updates data at the given path.
      *
-     * @param array          $array
-     * @param array|string[] $key
-     * @param callable       $callback Callback to update the value.
+     * @param array    $array
+     * @param sting    $key
+     * @param callable $callback Callback to update the value.
      *
      * @return mixed Updated data.
      */
-    public static function update(array $array, $key, callable $callback)
+    public static function update(array $array, string $key, callable $callback)
     {
         $keys = explode('.', $key);
         $current = &$array;
@@ -264,7 +264,7 @@ class Arr
                 continue;
             }
 
-            $parts = explode('.', $key);
+            $parts = explode('.', (string) $key);
             // clean up before each pass
             $array = &$original;
 
@@ -701,7 +701,7 @@ class Arr
         $hierarchy = [];
 
         foreach ($array as $key => $value) {
-            $segments = explode('.', $key);
+            $segments = explode('.', (string) $key);
             $valueSegment = array_pop($segments);
             $branch = &$hierarchy;
 
@@ -794,7 +794,7 @@ class Arr
         $results = [];
 
         foreach ($array as $key => $value) {
-            if (count($dottedKeys = explode('.', $key, 2)) > 1) {
+            if (count($dottedKeys = explode('.', (string) $key, 2)) > 1) {
                 $results[$dottedKeys[0]][$dottedKeys[1]] = $value;
             } else {
                 $results[$key] = $value;
