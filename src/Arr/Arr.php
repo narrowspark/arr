@@ -29,13 +29,13 @@ class Arr
     /**
      * Get a value from the array, and remove it.
      *
-     * @param array  $array
-     * @param string $key
-     * @param mixed  $default
+     * @param array      $array
+     * @param string|int $key
+     * @param mixed      $default
      *
      * @return mixed
      */
-    public static function pull(array &$array, string $key, $default = null)
+    public static function pull(array &$array, $key, $default = null)
     {
         $value = static::get($array, $key, $default);
 
