@@ -387,7 +387,7 @@ class Arr
     /**
      * Return the closest found value from array.
      *
-     * @param array $array
+     * @param array  $array
      * @param string $value
      *
      * @return mixed
