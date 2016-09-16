@@ -18,7 +18,6 @@ A PHP collection of utilities to manipulate arrays. Compatible with, PHP 7 and P
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/narrowspark/arr/develop.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/narrowspark/arr/develop.svg?style=flat-square)](https://scrutinizer-ci.com/g/narrowspark/arr)
 
-* [Why?](#why)
 * [Installation](#installation)
 * [Arr](#arr)
     * [Access methods](#access)
