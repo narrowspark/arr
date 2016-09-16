@@ -21,7 +21,7 @@ class Arr
      *
      * @return bool
      */
-    public static function accessible($value)
+    public static function accessible($value): bool
     {
         return is_array($value) || $value instanceof ArrayAccess;
     }
@@ -940,8 +940,12 @@ class Arr
      *
      * @return array
      */
-    public static function sort(array $array, callable $callback, int $options = SORT_REGULAR, bool $descending = false): array
-    {
+    public static function sort(
+        array $array,
+        callable $callback,
+        int $options = SORT_REGULAR,
+        bool $descending = false
+    ): array {
         $results = [];
 
         // First we will loop through the items and get the comparator from a callback
