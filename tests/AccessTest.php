@@ -1,15 +1,19 @@
 <?php
+declare(strict_types=1);
 namespace Narrowspark\Arr\Tests;
 
-use Narrowspark\Arr\Access;
+use Narrowspark\Arr\Arr;
 
 class AccessTest extends \PHPUnit_Framework_TestCase
 {
-    protected $access;
-
-    public function setUp()
+    public function testValue()
     {
-        $this->access = new Access();
+        $int = Arr::value(function () {
+            return 42;
+        });
+
+        $this->assertSame(42, $int);
+        $this->assertSame('42', Arr::value('42'));
     }
 
     public function testUpdate()
@@ -38,9 +42,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             return $value + 1;
         };
 
-        $result = $this->access->update($data, 'a', $increment);
-        $result = $this->access->update($result, 'z', $increment);
-        $result = $this->access->update($result, 'b.d.e', $increment);
+        $result = Arr::update($data, 'a', $increment);
+        $result = Arr::update($result, 'z', $increment);
+        $result = Arr::update($result, 'b.d.e', $increment);
 
         $this->assertEquals($expected, $result);
     }
@@ -50,7 +54,7 @@ class AccessTest extends \PHPUnit_Framework_TestCase
      */
     public function testAdd($expected, $array, $key, $value)
     {
-        $this->assertEquals($expected, $this->access->add($array, $key, $value));
+        $this->assertEquals($expected, Arr::add($array, $key, $value));
     }
 
     public function addProvider()
@@ -67,13 +71,13 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
 
-        $value = $this->access->get($array, 'products.desk');
+        $value = Arr::get($array, 'products.desk');
         $this->assertEquals(['price' => 100], $value);
 
-        $value = $this->access->get($array);
+        $value = Arr::get($array);
         $this->assertEquals($array, $value);
 
-        $value = $this->access->get($array, 'products');
+        $value = Arr::get($array, 'products');
         $this->assertEquals(['desk' => ['price' => 100]], $value);
     }
 
@@ -81,12 +85,34 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
 
-        $this->assertTrue($this->access->has($array, 'products'));
-        $this->assertTrue($this->access->has($array, 'products.desk'));
-        $this->assertTrue($this->access->has($array, 'products.desk.price'));
-        $this->assertFalse($this->access->has($array, 'products.foo'));
-        $this->assertFalse($this->access->has($array, 'products.desk.foo'));
-        $this->assertFalse($this->access->has([], null));
+        $this->assertTrue(Arr::has($array, 'products'));
+        $this->assertTrue(Arr::has($array, 'products.desk'));
+        $this->assertTrue(Arr::has($array, 'products.desk.price'));
+        $this->assertFalse(Arr::has($array, 'products.foo'));
+        $this->assertFalse(Arr::has($array, 'products.desk.foo'));
+        $this->assertFalse(Arr::has([], null));
+    }
+
+    public function testAny()
+    {
+        $array = ['products.desk' => ['price' => 100]];
+        $this->assertTrue(Arr::any($array, 'products.desk'));
+
+        $array = ['products' => ['desk' => ['price' => 100], 'foo' => ['price' => 100]]];
+        $this->assertTrue(Arr::any($array, ['products.foo', 'products.desk']));
+        $this->assertTrue(Arr::any($array, ['products.desk.price', 'products.desk.count']));
+        $this->assertFalse(Arr::any($array, ['products.baz', 'products.desk.count']));
+
+        $array = ['foo' => null, 'bar' => ['baz' => null]];
+        $this->assertTrue(Arr::any($array, ['foo', 'desk']));
+        $this->assertTrue(Arr::any($array, ['foo.foo', 'bar.baz']));
+
+        $array = ['foo', 'bar'];
+        $this->assertFalse(Arr::any($array, null));
+
+        $this->assertFalse(Arr::any([], null));
+
+        $this->assertFalse(Arr::any([], [null, true]));
     }
 
     public function testAny()
@@ -114,11 +140,11 @@ class AccessTest extends \PHPUnit_Framework_TestCase
     public function testSet()
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->set($array, 'products.desk.price', 200);
+        $array = Arr::set($array, 'products.desk.price', 200);
         $this->assertEquals(['products' => ['desk' => ['price' => 200]]], $array);
 
         $array = ['products' => ['desk' => ['price' => 100]]];
-        $array = $this->access->set($array, null, $array);
+        $array = Arr::set($array, null, $array);
         $this->assertEquals(['products' => ['desk' => ['price' => 100]]], $array);
     }
 
@@ -127,7 +153,9 @@ class AccessTest extends \PHPUnit_Framework_TestCase
      */
     public function testForget($expected, $array, $key)
     {
-        $this->assertEquals($expected, $this->access->forget($array, $key));
+        Arr::forget($array, $key);
+
+        $this->assertEquals($expected, $array);
     }
 
     public function forgetProvider()
@@ -142,6 +170,28 @@ class AccessTest extends \PHPUnit_Framework_TestCase
             [['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], 'products.desk.final.taxes'],
             [['products' => ['desk' => ['price' => ['original' => 50]]]], ['products' => ['desk' => ['price' => ['original' => 50, 'taxes' => 60]]]], 'products.desk.price.taxes'],
             [['products' => ['desk' => [], null => 'something']], ['products' => ['desk' => ['price' => 50], null => 'something']], ['products.amount.all', 'products.desk.price']],
+        ];
+    }
+
+    /**
+     * @dataProvider pullProvider
+     */
+    public function testPull($expected, $expected2, $array, $key)
+    {
+        $name = (new Arr())->pull($array, $key);
+
+        $this->assertEquals($expected, $name);
+        $this->assertEquals($expected2, $array);
+    }
+
+    public function pullProvider()
+    {
+        return [
+            ['Desk', ['price' => 100], ['name' => 'Desk', 'price' => 100], 'name'],
+            // Only works on first level keys
+            ['Joe', ['jane@localhost' => 'Jane'], ['joe@example.com' => 'Joe', 'jane@localhost' => 'Jane'], 'joe@example.com'],
+            // Does not work for nested keys
+            [null, ['emails' => ['joe@example.com' => 'Joe', 'jane@localhost' => 'Jane']], ['emails' => ['joe@example.com' => 'Joe', 'jane@localhost' => 'Jane']], 'emails.joe@example.com'],
         ];
     }
 }

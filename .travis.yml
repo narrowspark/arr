@@ -1,22 +1,14 @@
 language: php
 
 php:
-  - 5.6
   - 7.0
   - 7.1
-  - hhvm
 
 env:
   global:
     - setup=basic
 
 matrix:
-  include:
-    # Use the newer stack for HHVM as HHVM does not support Precise anymore since a long time and so Precise has an outdated version
-    - php: hhvm
-      sudo: required
-      dist: trusty
-      group: edge
   fast_finish: true
 
 sudo: false
@@ -37,8 +29,8 @@ install:
 script:
   - mkdir -p build/logs
   - vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
-  - vendor/bin/phpunit -c phpunit.xml.dist --verbose
+  - vendor/bin/phpunit -c phpunit.xml.dist --verbose --coverage-clover=coverage.clover
 
 after_script:
-  - if [ $TRAVIS_PHP_VERSION = "5.6" ] && [ $setup = 'basic' ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ $TRAVIS_PHP_VERSION = "5.6" ] && [ $setup = 'basic' ]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/coverage.clover; fi
+  - if [ $TRAVIS_PHP_VERSION = "7.0" ] && [ $setup = 'basic' ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [ $TRAVIS_PHP_VERSION = "7.0" ] && [ $setup = 'basic' ]; then php ocular.phar code-coverage:upload --access-token="db3bb6e97d8d8a70eb6c19ce9f7dc1ff03aa2101252ec6b4e8f97faf1a602711" --format=php-clover coverage.clover; fi
