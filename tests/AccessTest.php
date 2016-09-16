@@ -115,28 +115,6 @@ class AccessTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Arr::any([], [null, true]));
     }
 
-    public function testAny()
-    {
-        $array = ['products.desk' => ['price' => 100]];
-        $this->assertTrue($this->access->any($array, 'products.desk'));
-
-        $array = ['products' => ['desk' => ['price' => 100], 'foo' => ['price' => 100]]];
-        $this->assertTrue($this->access->any($array, ['products.foo', 'products.desk']));
-        $this->assertTrue($this->access->any($array, ['products.desk.price', 'products.desk.count']));
-        $this->assertFalse($this->access->any($array, ['products.baz', 'products.desk.count']));
-
-        $array = ['foo' => null, 'bar' => ['baz' => null]];
-        $this->assertTrue($this->access->any($array, ['foo', 'desk']));
-        $this->assertTrue($this->access->any($array, ['foo.foo', 'bar.baz']));
-
-        $array = ['foo', 'bar'];
-        $this->assertFalse($this->access->any($array, null));
-
-        $this->assertFalse($this->access->any([], null));
-
-        $this->assertFalse($this->access->any([], [null, true]));
-    }
-
     public function testSet()
     {
         $array = ['products' => ['desk' => ['price' => 100]]];
