@@ -85,9 +85,9 @@ class Arr
      * Get an item from an array using "dot" notation.
      * If key dont exist, you get a default value back.
      *
-     * @param array                  $array
-     * @param string[]|callable|null $key
-     * @param mixed                  $default
+     * @param array           $array
+     * @param string|int|null $key
+     * @param mixed           $default
      *
      * @return mixed
      */
@@ -388,7 +388,7 @@ class Arr
      * Return the closest found value from array.
      *
      * @param array $array
-     * @param sting $value
+     * @param string $value
      *
      * @return mixed
      */
@@ -439,8 +439,8 @@ class Arr
      * Swap two elements between positions.
      *
      * @param array      $array array to swap
-     * @param string<int $swapA
-     * @param string<int $swapB
+     * @param string|int $swapA
+     * @param string|int $swapB
      *
      * @return array|null
      */
@@ -526,7 +526,7 @@ class Arr
                     $key = substr($key, 0, -2);
                 }
 
-                static::recurseCollapse($value, $newArray, (array) $key);
+                self::recurseCollapse($value, $newArray, (array) $key);
             } else {
                 $newArray[$key] = $value;
             }
@@ -561,11 +561,7 @@ class Arr
                 return false;
             }
 
-            if (! trim($item)) {
-                return false;
-            }
-
-            return true;
+            return (bool) trim($item);
         });
     }
 
@@ -617,11 +613,9 @@ class Arr
     /**
      * Merges two or more arrays into one recursively.
      *
-     * @param array $arrays.
-     *
      * @return array
      */
-    public static function merge(array $arrays): array
+    public static function merge(): array
     {
         $args = func_get_args();
         $array = array_shift($args);
@@ -675,11 +669,9 @@ class Arr
     /**
      * Extend one array with another.
      *
-     * @param array $arrays
-     *
      * @return array
      */
-    public static function extend(array $arrays): array
+    public static function extend(): array
     {
         $merged = [];
 
@@ -905,11 +897,9 @@ class Arr
      * Extend one array with another. Non associative arrays will not be merged
      * but rather replaced.
      *
-     * @param array $arrays
-     *
      * @return array
      */
-    public static function extendDistinct(...$arrays)
+    public static function extendDistinct()
     {
         $merged = [];
 
@@ -997,17 +987,15 @@ class Arr
      * Will turn each element in $arr into an array then appending
      * the associated indexs from the other arrays into this array as well.
      *
-     * @param array $array
-     * @param array $arrays
-     *
      * @return array
      */
-    public static function zip(array $array, array $arrays)
+    public static function zip()
     {
         $args = func_get_args();
+        $originalArr = $args[0];
         array_shift($args);
 
-        foreach ($array as $key => $value) {
+        foreach ($originalArr as $key => $value) {
             $array[$key] = [$value];
 
             foreach ($args as $k => $v) {
@@ -1197,7 +1185,7 @@ class Arr
             $fstack = array_merge($stack, [$key]);
 
             if (is_array($value)) {
-                static::recurseCollapse($value, $newArray, $fstack);
+                self::recurseCollapse($value, $newArray, $fstack);
             } else {
                 $top = array_shift($fstack);
                 $arrayPart = count($fstack) ? '.' . implode('.', $fstack) : '';
