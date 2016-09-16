@@ -987,13 +987,16 @@ class Arr
      * Will turn each element in $arr into an array then appending
      * the associated indexs from the other arrays into this array as well.
      *
-     * @return array
+     * @return array<*,array>
      */
     public static function zip()
     {
         $args = func_get_args();
         $originalArr = $args[0];
+
         array_shift($args);
+
+        $array = [];
 
         foreach ($originalArr as $key => $value) {
             $array[$key] = [$value];
