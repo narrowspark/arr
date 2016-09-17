@@ -125,4 +125,12 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('foobartest', Arr::closest($array, 'test'));
     }
+
+    public function testExcept()
+    {
+        $array = ['name' => 'Desk', 'price' => 100];
+        $array = Arr::except($array, ['price']);
+
+        $this->assertEquals(['name' => 'Desk'], $array);
+    }
 }
