@@ -25,6 +25,7 @@ class TraverseTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertEquals(200, $value);
+        $this->assertEquals(100, Arr::first($array));
 
         $value = Arr::first($array, function ($key, $value) {
             if ($key === $value) {
@@ -62,11 +63,19 @@ class TraverseTest extends \PHPUnit_Framework_TestCase
     public function testLast()
     {
         $array = [100, 200, 300];
-        $last = Arr::last($array, function () {
-            return true;
+
+        $last = Arr::last($array, function ($key, $value) {
+            return $value < 250;
         });
 
-        $this->assertEquals(300, $last);
+        $this->assertEquals(200, $last);
+
+        $last = Arr::last($array, function ($key) {
+            return $key < 2;
+        });
+
+        $this->assertEquals(200, $last);
+        $this->assertEquals(300, Arr::last($array));
     }
 
     public function testWhere()

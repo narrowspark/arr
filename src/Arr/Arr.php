@@ -237,7 +237,7 @@ class Arr
             $current = &$current[$key];
         }
 
-        $current = call_user_func($callback, $current);
+        $current = $callback($current);
 
         return $array;
     }
@@ -491,7 +491,7 @@ class Arr
         $combined = [];
 
         foreach ($array as $key => $value) {
-            $combinator = call_user_func($callback, $value, $key);
+            $combinator = $callback($value, $key);
 
             // fix for hhvm #1871 bug
             if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.10.0', '<=')) {
@@ -738,7 +738,7 @@ class Arr
         return array_reduce(
             $array,
             function ($buckets, $value) use ($callback) {
-                $key = call_user_func($callback, $value);
+                $key = $callback($value);
 
                 if (! array_key_exists($key, $buckets)) {
                     $buckets[$key] = [];
@@ -1026,7 +1026,7 @@ class Arr
         $newArray = [];
 
         foreach ($array as $key => $item) {
-            $result = call_user_func($callback, $item, $key);
+            $result = $callback($item, $key);
 
             $newArray = is_array($result) ?
                 array_replace_recursive($array, $result) :
@@ -1046,15 +1046,7 @@ class Arr
      */
     public static function filter(array $array, callable $callback)
     {
-        $newArray = [];
-
-        foreach ($array as $key => $item) {
-            if (call_user_func($callback, $item, $key)) {
-                $newArray[$key] = $item;
-            }
-        }
-
-        return $newArray;
+        return array_filter($array, $callback, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
@@ -1069,7 +1061,7 @@ class Arr
     public static function all(array $array, callable $predicate)
     {
         foreach ($array as $key => $value) {
-            if (! call_user_func($predicate, $value, $key, $array)) {
+            if (! $predicate($value, $key, $array)) {
                 return false;
             }
         }
@@ -1088,7 +1080,7 @@ class Arr
     public static function reject(array $array, callable $callback): array
     {
         return static::filter($array, function ($value, $key) use ($callback) {
-            return ! call_user_func($callback, $value, $key);
+            return ! $callback($value, $key);
         });
     }
 
@@ -1105,7 +1097,7 @@ class Arr
         $filtered = [];
 
         foreach ($array as $key => $value) {
-            if (call_user_func($callback, $key, $value)) {
+            if ($callback($key, $value)) {
                 $filtered[$key] = $value;
             }
         }
@@ -1135,7 +1127,7 @@ class Arr
         }
 
         foreach ($array as $key => $value) {
-            if (call_user_func($callback, $key, $value)) {
+            if ($callback($key, $value)) {
                 return $value;
             }
         }
@@ -1154,11 +1146,26 @@ class Arr
      */
     public static function last(array $array, callable $callback = null, $default = null)
     {
-        if (is_null($callback)) {
+        if ($callback === null) {
             return empty($array) ? static::value($default) : end($array);
         }
 
-        return static::first(array_reverse($array), $callback, $default);
+        return static::first(array_reverse($array, true), $callback, $default);
+    }
+
+    /**
+     * Get all of the given array except for a specified array of items.
+     *
+     * @param array        $array
+     * @param array|string $keys
+     *
+     * @return array
+     */
+    public static function except(array $array, $keys): array
+    {
+        static::forget($array, $keys);
+
+        return $array;
     }
 
     /**
