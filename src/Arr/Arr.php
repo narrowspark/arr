@@ -1169,6 +1169,21 @@ class Arr
     }
 
     /**
+     * Get all of the given array except for a specified array of items.
+     *
+     * @param array        $array
+     * @param array|string $keys
+     *
+     * @return array
+     */
+    public static function except(array $array, $keys): array
+    {
+        static::forget($array, $keys);
+
+        return $array;
+    }
+
+    /**
      * Return the default value of the given value.
      *
      * @param mixed $value
