@@ -522,7 +522,7 @@ class Arr
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 // strip any manually added '.'
-                if (preg_match('/\./', $key)) {
+                if (preg_match('/\./', (string) $key)) {
                     $key = substr($key, 0, -2);
                 }
 
@@ -1116,17 +1116,17 @@ class Arr
     /**
      * Return the first element in an array passing a given truth test.
      *
-     * @param array    $array
-     * @param callable $callback
-     * @param mixed    $default
+     * @param array         $array
+     * @param callable|null $callback
+     * @param mixed         $default
      *
      * @return mixed
      */
-    public static function first(array $array, callable $callback, $default = null)
+    public static function first(array $array, callable $callback = null, $default = null)
     {
         if (is_null($callback)) {
             if (empty($array)) {
-                return value($default);
+                return static::value($default);
             }
 
             foreach ($array as $item) {
@@ -1146,19 +1146,34 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      *
-     * @param array    $array
-     * @param callable $callback
-     * @param mixed    $default
+     * @param array         $array
+     * @param callable|null $callback
+     * @param mixed         $default
      *
      * @return mixed
      */
-    public static function last(array $array, callable $callback, $default = null)
+    public static function last(array $array, callable $callback = null, $default = null)
     {
         if (is_null($callback)) {
             return empty($array) ? static::value($default) : end($array);
         }
 
         return static::first(array_reverse($array), $callback, $default);
+    }
+
+    /**
+     * Get all of the given array except for a specified array of items.
+     *
+     * @param array        $array
+     * @param array|string $keys
+     *
+     * @return array
+     */
+    public static function except(array $array, $keys): array
+    {
+        static::forget($array, $keys);
+
+        return $array;
     }
 
     /**
