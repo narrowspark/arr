@@ -62,7 +62,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         $testArrayValues = array_values($testArray);
         $randomArrayValue = Arr::random($testArray);
 
-        $this->assertTrue(in_array($randomArrayValue, $testArrayValues));
+        $this->assertContains($randomArrayValue, $testArrayValues);
     }
 
     /**
